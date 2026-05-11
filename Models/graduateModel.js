@@ -17,7 +17,7 @@ const graduateSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, "Please enter your password"],
-      minLength: [6, "Password must be at least 6 characters long"],
+      minLength: [8, "Password must be at least 8 characters long"],
     },
 
     phone: {
@@ -59,6 +59,9 @@ const graduateSchema = new mongoose.Schema(
     gitHubProfile: String,
     linkedInProfile: String,
     portfolioLink: String,
+    passwordResetCode: String, // For forgot password functionality
+    passwordResetExpiredAt: Date, // Expiration time for password reset code
+    passwordResetVerified: Boolean, // To check if the reset code is verified
   },
   { timestamps: true },
 );

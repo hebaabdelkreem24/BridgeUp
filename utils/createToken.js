@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
-import { setMaxListeners } from "nodemailer/lib/xoauth2";
 
-export const createToken = (user) => {
+export const generateToken = (user) => {
   return jwt.sign(
     { userId: user._id, role: user.role },
     process.env.JWT_SECRET_KEY,

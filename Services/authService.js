@@ -1,9 +1,9 @@
 import asyncHandler from "express-async-handler";
 import ApiError from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
-import Graduate from "../models/Graduate.js";
-import Company from "../models/Company.js";
-import Admin from "../models/Admin.js";
+import Graduate from "../models/graduateModel.js";
+import Company from "../models/companyModel.js";
+import Admin from "../models/adminModel.js";
 
 // Middleware to protect routes and authenticate users
 export const protect = asyncHandler(async (req, res, next) => {
@@ -53,3 +53,138 @@ export const isApprovedCompany = asyncHandler(async (req, res, next) => {
   }
   next();
 });
+
+// Service function for login
+export const loginService = asyncHandler(async (email, password, role) => {
+  let user;
+  if (role === "Graduate") {
+    user = await Graduate.findOne({ email });
+  } else if (role === "Comapany") {
+    user = await Company.findOne({ businessEmail: email });
+  } else if (role === "Admin") {
+    user = await Admin.findOne({ email });
+  } else {
+    return next(new ApiError("Invalid role", 400));
+  }
+  if (!user) {
+    return next(new ApiError("Invalid email or password", 401));
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return next(new ApiError("Invalid email or password", 401));
+  }
+  const token = generateToken(user._id, role);
+  return {
+    token,
+    user: {
+      id: user._id,
+      name: user.fullName || user.companyName,
+      role,
+    },
+  };
+});
+
+// Service function for sending password reset email
+export const forgetPasswordService = asyncHandler(async (email, role) => {
+  let user;
+  if (role === "Graduate") {
+    user = await Graduate.findOne({ email });
+  } else if (role === "Company") {
+    user = await Company.findOne({ businessEmail: email });
+  }
+  if (!user) {
+    return next(new ApiError("User not found", 404));
+  }
+  // 2)If user exist, Generate reset random digits and save it in db
+  // generate code for 6 digit
+  const resedCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const hashedResetCode = crypto
+    .createHash("sha256")
+    .update(resedCode)
+    .digest("hex");
+  // Save hashed password reset code in db
+  user.passwordResetCode = hashedResetCode;
+  // add expiration time for password reset code (10 min)
+  user.passwordResetExpiredAt = Date.now() + 10 * 60 * 1000;
+  user.passwordResetVerified = false; // reset the verified status
+  await user.save();
+  // 2)Send the reset code via email
+  const message = `Hello ${user.name}, \n${resetCode}`;
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "Your password reset code (valid for 10 minutes)",
+      message,
+    });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    user.passwordResetCode = undefined;
+    user.passwordResetExpiredAt = undefined;
+    user.passwordResetVerified = undefined;
+    await user.save();
+    return next(
+      new ApiError(
+        "There was an error sending the email. Please try again later.",
+        500,
+      ),
+    );
+  }
+  return true;
+});
+
+// Service function for verifying password reset code
+export const verifyResetCodeService = asyncHandler(async (role, resetCode) => {
+  // 1) Get user based on reset code
+  const hashedResetCode = crypto
+    .createHash("sha256")
+    .update(resedCode)
+    .digest("hex");
+  let user;
+  if (role === "Graduate") {
+    user = await Graduate.findOne({
+      passwordResetCode: hashedResetCode,
+      passwordResetExpiredAt: { $gt: Date.now() },
+    });
+  } else if (role === "Company") {
+    user = await Company.findOne({
+      passwordResetCode: hashedResetCode,
+      passwordResetExpiredAt: { $gt: Date.now() },
+    });
+  } else {
+    return next(new ApiError("Invalid role", 400));
+  }
+  if (!user) {
+    return next(new ApiError("Invalid or expired reset code", 400));
+  }
+  user.passwordResetVerified = true;
+  await user.save();
+  return true;
+});
+
+// Service function for resetting password
+export const resetPasswordService = asyncHandler(async (email, role, newPassword) => {
+  let user;
+  if (role === "Graduate") {
+    user = await Graduate.findOne({ email });
+  } else if (role === "Company") {
+    user = await Company.findOne({ businessEmail: email });
+  } else {
+    return next(new ApiError("Invalid role", 400));
+  }
+  if (!user) {
+    return next(new ApiError("User not found", 404));
+  }
+  if (!user.passwordResetVerified) {
+    return next(
+      new ApiError("No reset code found, please request a new one", 400),
+    );
+  }
+  user.password = newPassword;
+  user.passwordResetCode = undefined;
+  user.passwordResetExpiredAt = undefined;
+  user.passwordResetVerified = undefined;
+  await user.save();
+return true;
+
+})
