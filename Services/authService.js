@@ -1,9 +1,11 @@
 import asyncHandler from "express-async-handler";
 import ApiError from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import Graduate from "../models/graduateModel.js";
 import Company from "../models/companyModel.js";
 import Admin from "../models/adminModel.js";
+import {resetPasswordTemplate} from "../utils/emailTemplate.js";
 
 // Middleware to protect routes and authenticate users
 export const protect = asyncHandler(async (req, res, next) => {
@@ -110,7 +112,7 @@ export const forgetPasswordService = asyncHandler(async (email, role) => {
   user.passwordResetVerified = false; // reset the verified status
   await user.save();
   // 2)Send the reset code via email
-  const message = `Hello ${user.name}, \n${resetCode}`;
+  const message = resetPasswordTemplate(user.email, resedCode);
   try {
     await sendEmail({
       email: user.email,

@@ -10,8 +10,6 @@ import {
   verifyResetCodeService,
   resetPasswordService,
 } from "../Services/authService.js";
-import { generateToken } from "../utils/createToken.js";
-import sendEmail from "../utils/sendEmail.js";
 
 
 
