@@ -18,6 +18,7 @@ const graduateSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your password"],
       minLength: [8, "Password must be at least 8 characters long"],
+      select: false,
     },
 
     phone: {

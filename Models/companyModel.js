@@ -19,6 +19,7 @@ const companySchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your password"],
       minLength: [8, "Password must be at least 8 characters long"],
+      select: false,
     },
 
     phone: {
@@ -59,6 +60,8 @@ const companySchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+//companySchema.index({ email: 1 });
+companySchema.index({ isApproved: 1 });
 
 const Company = mongoose.model("Company", companySchema);
 

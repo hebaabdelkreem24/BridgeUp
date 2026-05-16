@@ -1,11 +1,11 @@
 import asyncHandler from "express-async-handler";
-import ApiError from "../utils/ApiError.js";
+import ApiError from "../utils/apiError.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import Graduate from "../models/graduateModel.js";
 import Company from "../models/companyModel.js";
 import Admin from "../models/adminModel.js";
-import {resetPasswordTemplate} from "../utils/emailTemplate.js";
+import { resetPasswordTemplate } from "../utils/emailTemplate.js";
 
 // Middleware to protect routes and authenticate users
 export const protect = asyncHandler(async (req, res, next) => {
@@ -165,28 +165,29 @@ export const verifyResetCodeService = asyncHandler(async (role, resetCode) => {
 });
 
 // Service function for resetting password
-export const resetPasswordService = asyncHandler(async (email, role, newPassword) => {
-  let user;
-  if (role === "Graduate") {
-    user = await Graduate.findOne({ email });
-  } else if (role === "Company") {
-    user = await Company.findOne({ businessEmail: email });
-  } else {
-    return next(new ApiError("Invalid role", 400));
-  }
-  if (!user) {
-    return next(new ApiError("User not found", 404));
-  }
-  if (!user.passwordResetVerified) {
-    return next(
-      new ApiError("No reset code found, please request a new one", 400),
-    );
-  }
-  user.password = newPassword;
-  user.passwordResetCode = undefined;
-  user.passwordResetExpiredAt = undefined;
-  user.passwordResetVerified = undefined;
-  await user.save();
-return true;
-
-})
+export const resetPasswordService = asyncHandler(
+  async (email, role, newPassword) => {
+    let user;
+    if (role === "Graduate") {
+      user = await Graduate.findOne({ email });
+    } else if (role === "Company") {
+      user = await Company.findOne({ businessEmail: email });
+    } else {
+      return next(new ApiError("Invalid role", 400));
+    }
+    if (!user) {
+      return next(new ApiError("User not found", 404));
+    }
+    if (!user.passwordResetVerified) {
+      return next(
+        new ApiError("No reset code found, please request a new one", 400),
+      );
+    }
+    user.password = newPassword;
+    user.passwordResetCode = undefined;
+    user.passwordResetExpiredAt = undefined;
+    user.passwordResetVerified = undefined;
+    await user.save();
+    return true;
+  },
+);
