@@ -1,7 +1,7 @@
 import express from "express";
 import { graduateSignup } from "../Controllers/authController.js";
 import { graduateSignUpValidator } from "../utils/validators/graduateValidator.js";
-import { uploadSingleFile } from "../Midlewares/uploadMiddelware.js";
+import { uploadSingleFile } from "../Middelwares/uploadMiddelware.js";
 
 const router = express.Router();
 

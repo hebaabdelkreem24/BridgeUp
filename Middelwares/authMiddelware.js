@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import ApiError from "../utils/apiError.js";
-import Graduate from "../models/graduateModel.js";
-import Company from "../models/companyModel.js";
-import Admin from "../models/adminModel.js";
+import Graduate from "../Models/graduateModel.js";
+import Company from "../Models/companyModel.js";
+import Admin from "../Models/adminModel.js";
 
 export const protect = async (req, res, next) => {
   try {

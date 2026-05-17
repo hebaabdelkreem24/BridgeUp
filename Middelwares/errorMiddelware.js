@@ -16,7 +16,7 @@ const sendErrorForProd = (err, res) => {
   });
 };
 
-const handleJwtInavlidSignature = () =>
+const handleJwtInvlidSignature = () =>
   new ApiError("Inavlid token, please login again", 401);
 
 const handleJwtExpired = () =>
@@ -29,7 +29,7 @@ const globalError = (err, req, res, next) => {
     // eslint-disable-next-line no-use-before-define
     sendErrorForDev(err, res);
   } else {
-    if (err.name === "JsonWebTokenError") err = handleJwtInavlidSignature();
+    if (err.name === "JsonWebTokenError") err = handleJwtInvlidSignature();
     if (err.name === "TokenExpiredError") err = handleJwtExpired();
     // eslint-disable-next-line no-use-before-define
     sendErrorForProd(err, res);

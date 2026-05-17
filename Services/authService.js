@@ -2,10 +2,12 @@ import asyncHandler from "express-async-handler";
 import ApiError from "../utils/apiError.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import Graduate from "../models/graduateModel.js";
-import Company from "../models/companyModel.js";
-import Admin from "../models/adminModel.js";
+import Graduate from "../Models/graduateModel.js";
+import Company from "../Models/companyModel.js";
+import Admin from "../Models/adminModel.js";
 import { resetPasswordTemplate } from "../utils/emailTemplate.js";
+import bcrypt from "bcryptjs";
+import { generateToken } from "../utils/generateToken.js";
 
 // Middleware to protect routes and authenticate users
 export const protect = asyncHandler(async (req, res, next) => {
@@ -61,7 +63,7 @@ export const loginService = asyncHandler(async (email, password, role) => {
   let user;
   if (role === "Graduate") {
     user = await Graduate.findOne({ email });
-  } else if (role === "Comapany") {
+  } else if (role === "Company") {
     user = await Company.findOne({ businessEmail: email });
   } else if (role === "Admin") {
     user = await Admin.findOne({ email });

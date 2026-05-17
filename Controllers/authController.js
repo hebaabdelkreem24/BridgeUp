@@ -2,9 +2,9 @@ import asyncHandler from "express-async-handler";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import ApiError from "../utils/apiError.js";
-import Graduate from "../models/graduateModel.js";
-import Company from "../models/companyModel.js";
-import { createToken } from "../utils/createToken.js";
+import Graduate from "../Models/graduateModel.js";
+import Company from "../Models/companyModel.js";
+import { generateToken } from "../utils/generateToken.js";
 
 import {
   loginService,
@@ -111,7 +111,7 @@ export const graduateSignup = async (req, res, next) => {
     });
 
     // 5) Generate JWT token
-    const token = createToken(graduate._id, graduate.role);
+    const token = generateToken(graduate._id, graduate.role);
 
     // 6) Send response
     res.status(201).json({
@@ -134,34 +134,7 @@ export const graduateSignup = async (req, res, next) => {
   }
 };
 
-// ==================== Graduate Login ====================
-export const graduateLogin = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
 
-    const graduate = await Graduate.findOne({ email }).select("+password");
-
-    if (!graduate || !(await bcrypt.compare(password, graduate.password))) {
-      return next(new ApiError("Invalid email or password", 401));
-    }
-
-    const token = createToken(graduate._id, graduate.role);
-
-    res.status(200).json({
-      status: "success",
-      message: "Logged in successfully",
-      token,
-      data: {
-        id: graduate._id,
-        fullName: graduate.fullName,
-        email: graduate.email,
-        role: graduate.role,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 // ==================== Company Signup ====================
 export const companySignup = async (req, res, next) => {
@@ -226,37 +199,3 @@ export const companySignup = async (req, res, next) => {
   }
 };
 
-// ==================== Company Login ====================
-export const companyLogin = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-
-    const company = await Company.findOne({ email }).select("+password");
-
-    if (!company || !(await bcrypt.compare(password, company.password))) {
-      return next(new ApiError("Invalid email or password", 401));
-    }
-
-    // Check if company is approved
-    if (!company.isApproved) {
-      return next(new ApiError("Your account is pending admin approval", 403));
-    }
-
-    const token = createToken(company._id, company.role);
-
-    res.status(200).json({
-      status: "success",
-      message: "Logged in successfully",
-      token,
-      data: {
-        id: company._id,
-        companyName: company.companyName,
-        email: company.email,
-        role: company.role,
-        isApproved: company.isApproved,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
