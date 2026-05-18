@@ -18,12 +18,12 @@ export const protect = async (req, res, next) => {
     }
 
     // 2) Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     // 3) Find user by id & role
     let user;
     if (decoded.role === "Graduate") {
-      user = await Graduate.findById(decoded.id);
+      user = await Graduate.findById(decoded.userId);
     } else if (decoded.role === "Company") {
       user = await Company.findById(decoded.id);
     } else if (decoded.role === "Admin") {

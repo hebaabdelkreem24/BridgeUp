@@ -111,6 +111,8 @@ export const graduateSignup = async (req, res, next) => {
     });
 
     // 5) Generate JWT token
+    const user = await resetPasswordService(email, role, newPassword);
+
     const token = generateToken(graduate._id, graduate.role);
 
     // 6) Send response
