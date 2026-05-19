@@ -54,7 +54,6 @@ const graduateSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "Graduate",
     },
     cv: String,
     gitHubProfile: String,

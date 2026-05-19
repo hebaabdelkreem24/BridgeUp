@@ -48,7 +48,6 @@ const companySchema = new mongoose.Schema(
     // Meta
     role: {
       type: String,
-      default: "Company",
     },
     isApproved: {
       type: Boolean,

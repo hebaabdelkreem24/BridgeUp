@@ -1,6 +1,7 @@
 import express from "express";
 
 import {
+  selectRole,
   graduateSignup,
   companySignup,
   login,
@@ -25,6 +26,7 @@ import {
 
 const authRouter = express.Router();
 
+authRouter.post("/select-role", selectRole);
 // ========== Graduate Routes ==========
 // uploadSingleFile
 authRouter.post(
