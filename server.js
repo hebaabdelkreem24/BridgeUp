@@ -28,8 +28,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Global Error Handling Midleware for express
 app.use(globalError);
 
-const port = process.env.PORT || 5000;
+// const port = process.env.PORT || 5000;
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });
+
+export default app;
