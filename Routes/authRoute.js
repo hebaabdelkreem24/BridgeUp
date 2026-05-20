@@ -28,7 +28,6 @@ const authRouter = express.Router();
 
 authRouter.post("/select-role", selectRole);
 // ========== Graduate Routes ==========
-// uploadSingleFile
 authRouter.post(
   "/signup-grad",
   uploadSingleFile,
@@ -37,7 +36,6 @@ authRouter.post(
 );
 
 // ========== Company Routes ==========
-// uploadCompanyFiles
 authRouter.post(
   "/signup-comp",
   uploadCompanyFiles,

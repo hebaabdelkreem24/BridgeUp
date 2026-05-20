@@ -89,18 +89,6 @@ export const signupCompValidator = [
     .optional()
     .isLength({ max: 500 })
     .withMessage("Description cannot exceed 500 characters"),
-  check("commercialRegister")
-    .notEmpty()
-    .withMessage("Commercial register number is required")
-    .isLength({ min: 5, max: 50 })
-    .withMessage(
-      "Commercial register number must be between 5 and 50 characters",
-    ),
-  check("taxCard")
-    .notEmpty()
-    .withMessage("Tax card number is required")
-    .isLength({ min: 5, max: 50 })
-    .withMessage("Tax card number must be between 5 and 50 characters"),
 
   validatorMiddelware,
 ];

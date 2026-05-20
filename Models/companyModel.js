@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const companySchema = new mongoose.Schema(
   {
@@ -61,6 +62,11 @@ const companySchema = new mongoose.Schema(
 );
 //companySchema.index({ email: 1 });
 companySchema.index({ isApproved: 1 });
+
+companySchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  this.password = await bcrypt.hash(this.password, 12);
+});
 
 const Company = mongoose.model("Company", companySchema);
 

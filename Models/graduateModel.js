@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const graduateSchema = new mongoose.Schema(
   {
@@ -54,7 +55,7 @@ const graduateSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-    },
+    },  
     cv: String,
     gitHubProfile: String,
     linkedInProfile: String,
@@ -65,6 +66,11 @@ const graduateSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+graduateSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  this.password = await bcrypt.hash(this.password,12);
+})
 
 const Graduate = mongoose.model("Graduate", graduateSchema);
 
