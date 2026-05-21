@@ -8,12 +8,19 @@ import { fileURLToPath } from "url";
 import path from "path";
 dotenv.config({ path: ".env" });
 console.log("JWT_SECRET from env:", process.env.JWT_SECRET);
+const cors = require('cors');
 
 // Connect to MongoDB
 
 connectDB();
 
+
+app.use(cors());
+
 const app = express();
+
+
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
