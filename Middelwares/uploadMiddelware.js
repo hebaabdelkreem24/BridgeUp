@@ -76,6 +76,7 @@ export const uploadCompanyFiles = (req, res, next) => {
 
   upload(req, res, (err) => {
     if (err instanceof multer.MulterError) {
+      console.log("MULTER ERROR:", err.code, err.message);
       if (err.code === "LIMIT_UNEXPECTED_FILE") {
         return next(
           new ApiError(
@@ -91,6 +92,12 @@ export const uploadCompanyFiles = (req, res, next) => {
     } else if (err) {
       return next(err);
     }
+
+        // === DEBUG ===
+    console.log("=== MULTER SUCCESS ===");
+    console.log("req.body:", req.body);
+    console.log("req.files:", req.files);
+    
     next();
   });
 };

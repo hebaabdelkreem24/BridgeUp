@@ -78,6 +78,7 @@ export const graduateSignupService = async (body, file) => {
     fullName,
     email,
     password,
+    confirmPassword,
     phone,
     age,
     gender,
@@ -93,13 +94,16 @@ export const graduateSignupService = async (body, file) => {
   if (existingUser) {
     throw new ApiError("Email already registered", 400);
   }
-
+  if (password !== confirmPassword) {
+    throw new ApiError("Confirm password not match password", 400);
+  }
   const cvPath = file ? `/uploads/${file.filename}` : null;
 
   const graduate = await Graduate.create({
     fullName,
     email,
     password,
+    confirmPassword,
     phone,
     age,
     gender,
@@ -120,6 +124,11 @@ export const graduateSignupService = async (body, file) => {
       id: graduate._id,
       fullName: graduate.fullName,
       email: graduate.email,
+      phone: graduate.phone,
+      password: graduate.password,
+      confirmPassword: graduate.confirmPassword,
+      age: graduate.age,
+      gender: graduate.gender,
       track: graduate.track,
       university: graduate.university,
     },
@@ -128,7 +137,15 @@ export const graduateSignupService = async (body, file) => {
 
 // Service function for signup Company
 export const companySignupService = async (body, files) => {
-  const { companyName, email, password, phone, industry, description } = body;
+  const {
+    companyName,
+    email,
+    password,
+    confirmPassword,
+    phone,
+    industry,
+    description,
+  } = body;
 
   const existingUser = await isEmailTaken(email);
   if (existingUser) {
@@ -141,7 +158,9 @@ export const companySignupService = async (body, files) => {
       400,
     );
   }
-
+  if (password !== confirmPassword) {
+    throw new ApiError("Confirm password not match password", 400);
+  }
   const commercialRegisterPath = `/uploads/${files.commercialRegister[0].filename}`;
   const taxCardPath = `/uploads/${files.taxCard[0].filename}`;
 
@@ -149,6 +168,7 @@ export const companySignupService = async (body, files) => {
     companyName,
     email,
     password,
+    confirmPassword,
     phone,
     industry,
     description: description || "",
@@ -162,7 +182,13 @@ export const companySignupService = async (body, files) => {
       id: company._id,
       companyName: company.companyName,
       email: company.email,
+          password,
+          confirmPassword,
+      phone: company.phone,
+      description: company.description,
       industry: company.industry,
+          taxCard: taxCardPath,
+          commercialRegister: commercialRegisterPath,
       isApproved: company.isApproved,
     },
   };

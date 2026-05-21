@@ -52,6 +52,9 @@ export const graduateSignup = asyncHandler(async (req, res, next) => {
 // @route   POST /api/auth/signup-comp
 // @access  Public
 export const companySignup = asyncHandler(async (req, res, next) => {
+    console.log("📥 Controller received:");
+  console.log("Controller - req.files:", req.files);
+  console.log("Controller - req.body:", req.body);
   const data = await companySignupService(req.body, req.files);
   res.status(201).json({
     status: "success",
