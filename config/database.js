@@ -9,7 +9,7 @@ export const connectDB = () => {
       );
     })
     .catch((err) => {
-        console.error("Error connecting to MongoDB:", err);
-        process.exit(1);
+      console.error("Error connecting to MongoDB:", err);
+      process.exit(1);
     });
 };
