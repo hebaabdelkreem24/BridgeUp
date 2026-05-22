@@ -6,10 +6,11 @@ import authRouter from "./Routes/authRoute.js";
 import { protect } from "./Middelwares/authMiddelware.js";
 import { fileURLToPath } from "url";
 import path from "path";
+import cors from 'cors';
 dotenv.config({ path: ".env" });
-console.log("JWT_SECRET from env:", process.env.JWT_SECRET);
-const cors = require('cors');
+console.log("JWT_SECRET from env:", process.env.JWT_SECRET_KEY);
 
+const app = express();
 // Connect to MongoDB
 
 connectDB();
@@ -17,9 +18,10 @@ connectDB();
 
 app.use(cors());
 
-const app = express();
 
+app.use(express.json());
 
+app.use(express.urlencoded({ extended: true }));
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,8 +31,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/v1/auth", authRouter);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from the "uploads" directory
 
