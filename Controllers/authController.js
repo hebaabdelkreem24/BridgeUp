@@ -69,6 +69,7 @@ export const companySignup = asyncHandler(async (req, res, next) => {
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   const data = await loginService(email, password);
+  console.log("✅ Login successful for:", email);
   res.status(200).json({
     message: "Login successful",
     ...data,

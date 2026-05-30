@@ -194,6 +194,9 @@ export const companySignupService = async (body, files) => {
 
 // Service function for login
 export const loginService = async (email, password) => {
+  try{
+      console.log("🔐 loginService called with email:", email);
+
   const [graduate, company, admin] = await Promise.all([
     Graduate.findOne({ email }).select("+password"),
     Company.findOne({ email }).select("+password"),
@@ -215,7 +218,7 @@ export const loginService = async (email, password) => {
     throw new ApiError("Your account is pending admin approval.", 403);
   }
 
-  const token = generateToken(user._id, role);
+  const token = generateToken({ _id: user._id, role });
   return {
     token,
     user: {
@@ -226,7 +229,19 @@ export const loginService = async (email, password) => {
       role,
     },
   };
+}catch(error){
+    if (error instanceof ApiError && error.isOperational) {
+    throw error;
+  }
+
+  console.error("Error in loginService:", error);
+  throw new ApiError("An error occurred during login. Please try again later.", 500);
+} 
 };
+
+
+
+
 // Service function for sending password reset email
 export const forgetPasswordService = async (email) => {
   const [graduate, company] = await Promise.all([

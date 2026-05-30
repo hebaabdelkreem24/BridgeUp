@@ -7,6 +7,8 @@ import { protect } from "./Middelwares/authMiddelware.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import cors from 'cors';
+import adminRoutes from "./Routes/adminRoutes.js";
+import companyRoutes from "./Routes/companyRoutes.js";
 dotenv.config({ path: ".env" });
 console.log("JWT_SECRET from env:", process.env.JWT_SECRET_KEY);
 
@@ -30,7 +32,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
 app.use("/api/v1/auth", authRouter);
-
+app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/company", companyRoutes);
 
 // Serve static files from the "uploads" directory
 

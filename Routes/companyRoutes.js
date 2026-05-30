@@ -1,15 +1,24 @@
 import express from "express";
-import { companySignup } from "../Controllers/authController.js";
-import { companySignUpValidator } from "../utils/validators/companyValidator.js";
-import { uploadCompanyFiles } from "../Midlewares/uploadMiddelware.js";
+import {protect ,restrictTo} from "../Middelwares/authMiddelware.js";
+import { 
+  getCompanyProfile,
+  updateCompanyProfile
+} from "../Controllers/companyController.js";
 
 const router = express.Router();
 
-router.post(
-  "/signup",
-  uploadCompanyFiles, // ← هنا
-  companySignUpValidator,
-  companySignup,
+// ========== Company Profile (بعد الـ Login) ==========
+router.get(
+  "/profile",
+  protect,
+  restrictTo("Company"),
+  getCompanyProfile
+);
+router.put(
+  "/profile",
+  protect,
+  restrictTo("Company"),
+  updateCompanyProfile
 );
 
 export default router;
