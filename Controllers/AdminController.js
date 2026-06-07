@@ -4,7 +4,7 @@ import {
   getAllGraduatesService,
   getCompaniesDashboardService,
   getAllGraduateswithFiltersService,
-} from "../services/adminService.js";
+} from "../Services/adminService.js";
 
 // @desc    Get platform statistics
 // @route   GET /api/v1/admin/stats
