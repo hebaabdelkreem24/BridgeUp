@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import Graduate from "../Models/graduateModel.js";
 import Company from "../Models/companyModel.js";
 import Admin from "../Models/adminModel.js";
-import Assessment from "../Models/assessmentModel.js";
+import Assessment from "../Models/AssessmentModel.js";
 import { resetPasswordTemplate } from "../utils/emailTemplate.js";
 import { generateToken } from "../utils/generateToken.js";
 import sendEmail from "../utils/sendEmail.js";
