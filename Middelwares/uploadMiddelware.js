@@ -1,17 +1,18 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import os from "os";
 import ApiError from "../utils/apiError.js";
 
 // تأكدي إن مجلد uploads موجود
-const uploadsDir = "uploads";
+const uploadsDir = path.join(os.tmpdir(), "uploads");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, uploadsDir); // <-- غيرتي هنا
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);

@@ -8,6 +8,8 @@ import {
   forgotPassword,
   verifyResetCode,
   resetPassword,
+  createAdminController,
+  loginAdminController,
 } from "../Controllers/authController.js";
 
 import {
@@ -23,6 +25,8 @@ import {
   verifyResetCodeValidator,
   resetPasswordValidator,
 } from "../utils/validators/authValidator.js";
+
+import {protect, allowOnly} from "../Services/authService.js";
 
 const authRouter = express.Router();
 
@@ -54,5 +58,9 @@ authRouter.post(
 );
 
 authRouter.post("/reset-password", resetPasswordValidator, resetPassword);
+
+// ========== Admin Routes ==========
+authRouter.post("/", createAdminController);
+authRouter.post("/AdminLogin", protect, allowOnly("Admin"), loginAdminController);
 
 export default authRouter;

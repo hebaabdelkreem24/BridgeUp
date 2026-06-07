@@ -5,7 +5,7 @@ const adminSchema = new mongoose.Schema(
   {
     fullName: {
       type: String,
-      required: [true, "Please enter your full name"],
+      //required: [true, "Please enter your full name"],
       trim: true,
     },
     email: {
@@ -31,6 +31,5 @@ adminSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, 12);
 });
 
-const Admin = mongoose.model("Admin", adminSchema);
-
+const Admin = mongoose.models.Admin || mongoose.model("Admin", adminSchema);
 export default Admin;
