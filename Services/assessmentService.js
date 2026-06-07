@@ -1,5 +1,5 @@
 import ApiError from "../utils/apiError.js";
-import Assessment from "../Models/AssessmentModel.js";
+import Assessment from "../Models/assessmentModel.js";
 import Graduate from "../Models/graduateModel.js";
 
 // Service function to update assessment results for a graduate
