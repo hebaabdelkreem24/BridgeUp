@@ -56,6 +56,10 @@ const graduateSchema = new mongoose.Schema(
     role: {
       type: String,
     },  
+    profilePicture: {
+      type: String,
+      default: "/uploads/defaultProfilePicture.png",
+    },
     cv: String,
     gitHubProfile: String,
     linkedInProfile: String,

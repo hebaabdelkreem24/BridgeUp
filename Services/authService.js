@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import Graduate from "../Models/graduateModel.js";
 import Company from "../Models/companyModel.js";
 import Admin from "../Models/adminModel.js";
+import Assessment from "../Models/assessmentModel.js";
 import { resetPasswordTemplate } from "../utils/emailTemplate.js";
 import { generateToken } from "../utils/generateToken.js";
 import sendEmail from "../utils/sendEmail.js";
@@ -30,15 +31,13 @@ export const protect = asyncHandler(async (req, res, next) => {
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-  let user;
-  if (decoded.role === "Graduate") {
-    user = await Graduate.findById(decoded.userId).select("-password");
-  } else if (decoded.role === "Company") {
-    user = await Company.findById(decoded.userId).select("-password");
-  } else if (decoded.role === "Admin") {
-    user = await Admin.findById(decoded.userId).select("-password");
-  }
+  const [graduate, company, admin] = await Promise.all([
+    Graduate.findOne({ _id: decoded.userId }).select("+password"),
+    Company.findOne({ _id: decoded.userId }).select("+password"),
+    Admin.findOne({ _id: decoded.userId }).select("+password"),
+  ]);
 
+  const user = graduate || company || admin;
   if (!user) {
     return next(new ApiError("Not authorized, user not found", 401));
   }
@@ -110,11 +109,16 @@ export const graduateSignupService = async (body, file) => {
     university,
     graduationYear,
     track,
+    profilePicture: profilePicture || null,
     cv: cvPath,
     portfolioLink: portfolioLink || null,
     linkedInProfile: linkedInProfile || null,
     gitHubProfile: gitHubProfile || null,
   });
+  const assessment = await Assessment.create({
+    graduate: graduate._id,
+  });
+  console.log("Assessment Created:", assessment);
 
   const token = generateToken(graduate._id, "Graduate");
 
@@ -126,11 +130,13 @@ export const graduateSignupService = async (body, file) => {
       email: graduate.email,
       phone: graduate.phone,
       password: graduate.password,
+      confirmPassword: graduate.confirmPassword,
       age: graduate.age,
       gender: graduate.gender,
       track: graduate.track,
       university: graduate.university,
     },
+    assessment,
   };
 };
 
@@ -181,12 +187,12 @@ export const companySignupService = async (body, files) => {
       id: company._id,
       companyName: company.companyName,
       email: company.email,
-          password,
+      password,
       phone: company.phone,
       description: company.description,
       industry: company.industry,
-          taxCard: taxCardPath,
-          commercialRegister: commercialRegisterPath,
+      taxCard: taxCardPath,
+      commercialRegister: commercialRegisterPath,
       isApproved: company.isApproved,
     },
   };
@@ -316,3 +322,22 @@ export const resetPasswordService = async (email, newPassword) => {
   await user.save();
   return true;
 };
+
+// Service function for admin login
+
+// Function to create a new admin
+export const createAdmin = asyncHandler(async (body) => {
+  const { name, email, password } = body;
+
+  const admin = await Admin.create({ name, email, password });
+  return admin;
+});
+
+export const loginAdmin = asyncHandler(async (body) => {
+  const { email, password } = body;
+  const admin = await Admin.findOne({ email });
+  if (!admin || !(await bcrypt.compare(password, admin.password))) {
+    throw new Error("Invalid credentials");
+  }
+  return admin;
+});

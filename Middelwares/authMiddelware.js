@@ -25,9 +25,9 @@ export const protect = async (req, res, next) => {
     if (decoded.role === "Graduate") {
       user = await Graduate.findById(decoded.userId);
     } else if (decoded.role === "Company") {
-      user = await Company.findById(decoded.id);
+      user = await Company.findById(decoded.userId);
     } else if (decoded.role === "Admin") {
-      user = await Admin.findById(decoded.id);
+      user = await Admin.findById(decoded.userId);
     }
 
     if (!user) {

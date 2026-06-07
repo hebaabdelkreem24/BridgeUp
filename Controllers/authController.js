@@ -11,7 +11,11 @@ import {
   forgetPasswordService,
   verifyResetCodeService,
   resetPasswordService,
+  createAdmin,
+  loginAdmin,
 } from "../Services/authService.js";
+
+
 
 // @desc    Select Role
 // @route   POST /api/auth/select-role
@@ -52,9 +56,6 @@ export const graduateSignup = asyncHandler(async (req, res, next) => {
 // @route   POST /api/auth/signup-comp
 // @access  Public
 export const companySignup = asyncHandler(async (req, res, next) => {
-    console.log("📥 Controller received:");
-  console.log("Controller - req.files:", req.files);
-  console.log("Controller - req.body:", req.body);
   const data = await companySignupService(req.body, req.files);
   res.status(201).json({
     status: "success",
@@ -105,4 +106,22 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
     status: "success",
     message: "Password reset successfully, you can now log in with your new password",
   });
+});
+
+// @desc    Create a new admin
+// @route   POST /api/admins
+// @access  Private
+export const createAdminController = asyncHandler(async (req, res) => {
+    const admin = await createAdmin(req.body);
+    const token = generateToken(admin._id);
+  res.status(201).json({ admin, token });
+});
+
+// @desc    Login an admin
+// @route   POST /api/admins/login
+// @access  Private
+export const loginAdminController = asyncHandler(async (req, res) => {
+    const admin = await loginAdmin(req.body);
+    const token = generateToken(admin._id);
+    res.status(200).json({ admin, token });
 });
