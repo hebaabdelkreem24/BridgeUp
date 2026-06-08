@@ -66,13 +66,10 @@ isBanned: {
   default: false
 },
 bannedAt: Date,
-
-rejectionReason: String,      // سبب الرفض (اختياري)
-passwordResetCode: String, // For forgot password functionality
-passwordResetExpiredAt: Date, // Expiration time for password reset code
-passwordResetVerified: Boolean, // To check if the reset code is verified
-
-
+rejectionReason: String,
+    passwordResetCode: String, // For forgot password functionality
+    passwordResetExpiredAt: Date, // Expiration time for password reset code
+    passwordResetVerified: Boolean, // To check if the reset code is verified
   },
   { timestamps: true },
 );

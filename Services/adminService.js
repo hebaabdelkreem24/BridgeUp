@@ -1,5 +1,5 @@
 import Graduate from "../Models/graduateModel.js";
-import Company from "../models/companyModel.js";
+import Company from "../Models/companyModel.js";
 import apiError from "../utils/apiError.js";
 
 // Service function to get platform statistics

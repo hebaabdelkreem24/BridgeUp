@@ -6,7 +6,7 @@ import {
   getAllGraduates,
   getCompaniesDashboardController,
   getAllGraduatesWithFilters,
-} from "../Controllers/adminController.js";
+} from "../Controllers/AdminController.js";
 
 const adminRouter = express.Router();
 
