@@ -112,10 +112,7 @@ export const graduateSignupService = async (body, file) => {
     university,
     graduationYear,
     track,
-<<<<<<< HEAD
-=======
     role:"graduate",
->>>>>>> fatma2
     cv: cvPath,
     portfolioLink: portfolioLink || null,
     linkedInProfile: linkedInProfile || null,
