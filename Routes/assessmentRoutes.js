@@ -12,14 +12,14 @@ const assessmentRouter = express.Router();
 assessmentRouter.put(
   "/:graduateId",
   protect,
-  allowOnly("Admin"),
+  allowOnly("admin"),
   updateAssessment,
 );
 // Get assessment results for a graduate (Admin only)
 assessmentRouter.get(
   "/:graduateId",
   protect,
-  allowOnly("Admin"),
+  allowOnly("admin"),
   getAssessment,
 );
 export default assessmentRouter;
