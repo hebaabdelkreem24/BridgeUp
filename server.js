@@ -32,11 +32,11 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(globalError);
 
 // Start the server
-const port = process.env.PORT || 5000;
+// const port = process.env.PORT || 5000;
 
-// Log the port number to confirm it's correct
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// // Log the port number to confirm it's correct
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });
 
-// export default app;
+export default app;
