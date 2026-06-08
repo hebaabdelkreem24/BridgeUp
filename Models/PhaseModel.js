@@ -10,14 +10,16 @@ const phaseSchema = new mongoose.Schema(
     title: {
       type: String,
       required: [true, "Please enter phase title"],
+      minlength: [3, "Phase title must be at least 3 characters"],
+      maxlength: [100, "Phase title must be less than 100 characters"],
       trim: true,
     },
     order: {
       type: Number,
-      required: true,
+      default: 1,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Phase = mongoose.model("Phase", phaseSchema);
