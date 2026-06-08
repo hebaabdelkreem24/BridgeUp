@@ -49,6 +49,8 @@ export const protect = asyncHandler(async (req, res, next) => {
 // Middleware to allow access only to specific roles
 export const allowOnly = (...roles) => {
   return (req, res, next) => {
+    console.log("User Role:", req.user.role);
+    console.log("Allowed Roles:", roles);
     if (!roles.includes(req.user.role)) {
       return next(
         new ApiError(
@@ -84,6 +86,7 @@ export const graduateSignupService = async (body, file) => {
     university,
     graduationYear,
     track,
+    role,
     portfolioLink,
     linkedInProfile,
     gitHubProfile,
@@ -109,6 +112,7 @@ export const graduateSignupService = async (body, file) => {
     university,
     graduationYear,
     track,
+    role:"graduate",
     cv: cvPath,
     portfolioLink: portfolioLink || null,
     linkedInProfile: linkedInProfile || null,
@@ -133,6 +137,7 @@ export const graduateSignupService = async (body, file) => {
       age: graduate.age,
       gender: graduate.gender,
       track: graduate.track,
+      role: graduate.role,
       university: graduate.university,
     },
     assessment,

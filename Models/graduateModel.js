@@ -53,9 +53,13 @@ const graduateSchema = new mongoose.Schema(
       required: [true, "Please enter your track"],
       enum: ["Frontend", "Backend"],
     },
+
     role: {
       type: String,
-    },  
+      enum: ["graduate"],
+      default: "graduate",
+    },
+
     profilePicture: {
       type: String,
       default: "/uploads/defaultProfilePicture.png",
@@ -73,8 +77,8 @@ const graduateSchema = new mongoose.Schema(
 
 graduateSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
-  this.password = await bcrypt.hash(this.password,12);
-})
+  this.password = await bcrypt.hash(this.password, 12);
+});
 
 const Graduate = mongoose.model("Graduate", graduateSchema);
 
