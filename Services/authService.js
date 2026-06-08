@@ -109,7 +109,6 @@ export const graduateSignupService = async (body, file) => {
     university,
     graduationYear,
     track,
-    profilePicture: profilePicture || null,
     cv: cvPath,
     portfolioLink: portfolioLink || null,
     linkedInProfile: linkedInProfile || null,
