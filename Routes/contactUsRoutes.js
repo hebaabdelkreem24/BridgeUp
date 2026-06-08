@@ -7,6 +7,6 @@ import { protect , allowOnly } from "../Services/authService.js";
 const contactUsRouter = express.Router();
 
 contactUsRouter.post("/contactUs", contactUsValidator, contactUs);
-contactUsRouter.get("/contactUs", protect, allowOnly("Admin"), getAllContactUs);
+contactUsRouter.get("/contactUs", protect, allowOnly("admin"), getAllContactUs);
 
 export default contactUsRouter;
