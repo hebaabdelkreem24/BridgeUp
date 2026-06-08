@@ -23,13 +23,7 @@ export const contactUsValidator = [
     .notEmpty()
     .withMessage("Email is required")
     .isEmail()
-    .withMessage("Please enter a valid email")
-    .custom(async (value) => {
-      const contactEntry = await ContactUs.findOne({ email: value });
-      if (contactEntry) {
-        throw new Error("Email is already in use");
-      }
-    }),
+    .withMessage("Please enter a valid email"),
   check("message")
     .notEmpty()
     .withMessage("Message is required")
