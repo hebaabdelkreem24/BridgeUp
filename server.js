@@ -5,7 +5,7 @@ import cors from "cors";
 import { fileURLToPath } from "url";
 import globalError from "./Middelwares/errorMiddelware.js";
 import { connectDB } from "./config/database.js";
-import {mountRoutes} from "./Routes/indexRoutes.js";
+import { mountRoutes } from "./Routes/indexRoutes.js";
 
 dotenv.config({ path: ".env" });
 
@@ -32,11 +32,11 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(globalError);
 
 // Start the server
-// const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
-// // Log the port number to confirm it's correct
-// app.listen(port, () => {
-//   console.log(`Server is running on port ${port}`);
-// });
+// Log the port number to confirm it's correct
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
-export default app;
+// export default app;
