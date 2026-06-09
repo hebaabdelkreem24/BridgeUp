@@ -5,9 +5,7 @@ import cors from "cors";
 import { fileURLToPath } from "url";
 import globalError from "./Middelwares/errorMiddelware.js";
 import { connectDB } from "./config/database.js";
-import {mountRoutes} from "./Routes/indexRoutes.js";
-import companyRoutes from "./Routes/companyRoutes.js";
-import adminRoutes from "./Routes/adminRoutes.js";
+import { mountRoutes } from "./Routes/indexRoutes.js";
 
 dotenv.config({ path: ".env" });
 
@@ -45,4 +43,4 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-export default app;
+// export default app;

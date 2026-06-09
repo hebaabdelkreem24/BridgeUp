@@ -61,6 +61,6 @@ authRouter.post("/reset-password", resetPasswordValidator, resetPassword);
 
 // ========== Admin Routes ==========
 authRouter.post("/", createAdminController);
-authRouter.post("/AdminLogin", protect, allowOnly("Admin"), loginAdminController);
+authRouter.post("/AdminLogin", protect, allowOnly("admin"), loginAdminController);
 
 export default authRouter;

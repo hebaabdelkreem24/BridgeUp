@@ -15,22 +15,22 @@ adminRouter.patch("/companies/:id/star", adminCompanyController.toggleStarCompan
 adminRouter.get("/companies/starred", adminCompanyController.getStarredCompanies);
 
 // Get platform statistics (Admin only)
-adminRouter.get("/stats", protect, allowOnly("Admin"), adminController.getStats);
+adminRouter.get("/stats", protect, allowOnly("admin"), getStats);
 // Get all graduates with scores + pagination (Admin only)
-adminRouter.get("/graduates", protect, allowOnly("Admin"), adminController.getAllGraduates);
+adminRouter.get("/graduates", protect, allowOnly("admin"), getAllGraduates);
 // Get companies dashboard data (Admin only)
 adminRouter.get(
   "/companies-dashboard",
   protect,
-  allowOnly("Admin"),
-  adminController.getCompaniesDashboardController,
+  allowOnly("admin"),
+  getCompaniesDashboardController,
 );
 // Get all graduates with filters + pagination (Admin only)
 adminRouter.get(
   "/all-graduates",
   protect,
-  allowOnly("Admin"),
-  adminController.getAllGraduatesWithFilters,
+  allowOnly("admin"),
+  getAllGraduatesWithFilters,
 );
 
 export default adminRouter;

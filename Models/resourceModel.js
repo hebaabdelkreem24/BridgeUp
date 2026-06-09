@@ -10,6 +10,8 @@ const resourceSchema = new mongoose.Schema(
     title: {
       type: String,
       required: [true, "Please enter resource title"],
+      minlength: [3, "Resource title must be at least 3 characters"],
+      maxlength: [100, "Resource title must be less than 100 characters"],
       trim: true,
     },
     url: {
