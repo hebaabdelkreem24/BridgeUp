@@ -7,6 +7,7 @@ import globalError from "./Middelwares/errorMiddelware.js";
 import { connectDB } from "./config/database.js";
 import {mountRoutes} from "./Routes/indexRoutes.js";
 import companyRoutes from "./Routes/companyRoutes.js";
+import adminRoutes from "./Routes/adminRoutes.js";
 
 dotenv.config({ path: ".env" });
 
@@ -24,6 +25,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 mountRoutes(app);
+app.use("/api/v1/admin", adminRoutes);
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

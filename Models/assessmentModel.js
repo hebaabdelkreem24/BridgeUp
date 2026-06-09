@@ -35,7 +35,7 @@ const assessmentSchema = new mongoose.Schema(
 );
 
 assessmentSchema.pre(/^find/, function () {
-  this.populate({path: "graduate", select: "name email profilePicture"});
+  this.populate({path: "graduate", select: "name email profilePicture track"});
 })
 
 
