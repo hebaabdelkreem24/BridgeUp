@@ -170,7 +170,6 @@ export const companySignupService = async (body, files) => {
   }
   const commercialRegisterPath = `/uploads/${files.commercialRegister[0].filename}`;
   const taxCardPath = `/uploads/${files.taxCard[0].filename}`;
-
   const company = await Company.create({
     companyName,
     email,
@@ -183,8 +182,10 @@ export const companySignupService = async (body, files) => {
     taxCard: taxCardPath,
     isApproved: false,
   });
+  const token = generateToken(company._id, "Company");
 
   return {
+    token,
     company: {
       id: company._id,
       companyName: company.companyName,

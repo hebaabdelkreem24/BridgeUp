@@ -6,6 +6,9 @@ import graduateRouter from "./graduateRoutes.js";
 import roadMapRouter from "./roadMapRoutes.js";
 import phaseRouter from "./phaseRoutes.js";
 import resourceRouter from "./resourceRoutes.js";
+import offerRouter from "./offerJobRoute.js";
+import quizRouter from "./quizRoutes.js";
+import questionRouter from "./questionRoutes.js";
 
 // Mount routers
 export const mountRoutes = (app) => {
@@ -17,4 +20,7 @@ export const mountRoutes = (app) => {
   app.use("/api/v1/roadmaps", roadMapRouter);
   app.use("/api/v1/phases", phaseRouter);
   app.use("/api/v1/resources", resourceRouter);
+  app.use("/api/v1/offers", offerRouter);
+  app.use("/api/v1/quiz", quizRouter);
+  app.use("/api/v1/questions", questionRouter);
 };
