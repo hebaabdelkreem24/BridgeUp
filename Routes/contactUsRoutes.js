@@ -8,6 +8,7 @@ import {
   getMessageById,
   deleteMessage,
   deleteAllMessages,
+  getMessagesStats,
 } from "../Controllers/contactUsController.js";
 import { protect, allowOnly } from "../Services/authService.js";
 
@@ -19,9 +20,9 @@ contactUsRouter
   .get(protect, allowOnly("admin"), getAllContactUs)
   .delete(protect, allowOnly("admin"), deleteAllMessages);
 contactUsRouter.get("/today", protect, allowOnly("admin"), getTodayMessages);
+contactUsRouter.get("/stats", protect, allowOnly("admin"), getMessagesStats);
 contactUsRouter
   .route("/:id")
   .get(protect, allowOnly("admin"), getMessageById)
   .delete(protect, allowOnly("admin"), deleteMessage);
-
 export default contactUsRouter;

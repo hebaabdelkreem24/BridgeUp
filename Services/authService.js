@@ -49,8 +49,6 @@ export const protect = asyncHandler(async (req, res, next) => {
 // Middleware to allow access only to specific roles
 export const allowOnly = (...roles) => {
   return (req, res, next) => {
-    console.log("User Role:", req.user.role);
-    console.log("Allowed Roles:", roles);
     if (!roles.includes(req.user.role)) {
       return next(
         new ApiError(
@@ -112,7 +110,7 @@ export const graduateSignupService = async (body, file) => {
     university,
     graduationYear,
     track,
-    role:"graduate",
+    role: "graduate",
     cv: cvPath,
     portfolioLink: portfolioLink || null,
     linkedInProfile: linkedInProfile || null,
@@ -327,8 +325,6 @@ export const resetPasswordService = async (email, newPassword) => {
   return true;
 };
 
-// Service function for admin login
-
 // Function to create a new admin
 export const createAdmin = asyncHandler(async (body) => {
   const { name, email, password } = body;
@@ -337,6 +333,7 @@ export const createAdmin = asyncHandler(async (body) => {
   return admin;
 });
 
+// Function to login admin
 export const loginAdmin = asyncHandler(async (body) => {
   const { email, password } = body;
   const admin = await Admin.findOne({ email });

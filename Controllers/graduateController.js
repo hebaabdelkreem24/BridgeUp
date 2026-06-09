@@ -6,7 +6,8 @@ import {
   getMyProfileService,
   getAssessmentMeService,
   updateMyProfileService,
-  updateDocumentsAndLinksService
+  updateDocumentsAndLinksService,
+  getMyRoadmapService,
 } from "../Services/graduateService.js";
 
 // @desc    Get graduate profile
@@ -62,3 +63,19 @@ export const updateDocumentsAndLinks = asyncHandler(async (req, res) => {
     data: graduate,
   });
 });
+
+// @desc    Get roadmap for the authenticated graduate
+// @route   GET /api/v1/graduates/me/roadmap
+// @access  Private (Graduate only)
+export const getMyRoadmap = async (req, res, next) => {
+  try {
+    const roadmap = await getMyRoadmapService(req.user._id);
+
+    res.status(200).json({
+      status: "success",
+      data: roadmap,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

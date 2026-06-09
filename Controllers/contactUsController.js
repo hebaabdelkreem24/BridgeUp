@@ -6,6 +6,7 @@ import {
   getMessageByIdService,
   deleteMessageService,
   deleteAllMessagesService,
+  getMessagesStatsService,
 } from "../Services/contactUsService.js";
 
 // @desc    Submit Contact Us Form
@@ -74,3 +75,20 @@ export const deleteAllMessages = asyncHandler(async (req, res, next) => {
     message: `${result.deletedCount} messages deleted successfully`,
   });
 });
+
+
+// @desc    Get Contact Us Messages Statistics
+// @route   GET /api/v1/contactUs/stats
+// @access  Private (Admin only)
+export const getMessagesStats = async (req, res, next) => {
+  try {
+    const stats = await getMessagesStatsService();
+
+    res.status(200).json({
+      status: "success",
+      data: stats,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
