@@ -19,6 +19,7 @@ export const protect = async (req, res, next) => {
 
     // 2) Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    console.log("Decoded token:", decoded); // <-- ضيف ده
 
     // 3) Find user by id & role
     let user;
@@ -29,6 +30,7 @@ export const protect = async (req, res, next) => {
     } else if (decoded.role === "Admin") {
       user = await Admin.findById(decoded.userId);
     }
+    console.log("👤 Found user:", !!user, "Role:", decoded.role);
 
     if (!user) {
       return next(new ApiError("User no longer exists", 401));
