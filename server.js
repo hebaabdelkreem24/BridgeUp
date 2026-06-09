@@ -23,13 +23,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 mountRoutes(app);
+app.use("/api/v1/admin", adminRoutes);
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Global Error Handling Midleware for express
+app.use("/api/v1/company", companyRoutes);
 app.use(globalError);
+
 
 // Start the server
 const port = process.env.PORT || 5000;
