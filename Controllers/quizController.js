@@ -24,7 +24,7 @@ export const createQuiz = async (req, res) => {
 
 export const getAllQuiz = async (req, res) => {
   try {
-    const quiz = await getAllquizService();
+    const quiz = await getAllQuizService();
 
     res.status(200).json({
       status: "success",
