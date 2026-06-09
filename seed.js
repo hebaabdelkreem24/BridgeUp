@@ -3,8 +3,7 @@ import bcrypt from "bcryptjs";
 import Graduate from "./Models/graduateModel.js";
 import Company from "./Models/companyModel.js";
 import dotenv from "dotenv";
-
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: ".env" });
 
 const seedData = async () => {
   try {
@@ -16,26 +15,29 @@ const seedData = async () => {
     await Company.deleteMany();
 
     // Graduate Test User
-    const gradPassword = await bcrypt.hash("12345678", 12);
+    // const gradPassword = await bcrypt.hash("12345678", 12);
     await Graduate.create({
       fullName: "Test Graduate",
       email: "graduate@test.com",
-      password: gradPassword,
+      password: "12345678",
       phone: "01234567890",
       age: 25,
       gender: "Female",
       university: "Cairo University",
       graduationYear: 2024,
       track: "Frontend",
+      iqScore: 85,
+  englishScore: 90,
+  technicalScore: 88,
       role: "Graduate",
     });
 
     // Company Test User (Approved)
-    const compPassword = await bcrypt.hash("12345678", 12);
+    // const compPassword = await bcrypt.hash("12345678", 12);
     await Company.create({
       companyName: "Test Company",
       email: "company@test.com",
-      password: compPassword,
+      password: "12345678",
       phone: "01234567891",
       industry: "IT",
       description: "Test company",

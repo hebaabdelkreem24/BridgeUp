@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import globalError from "./Middelwares/errorMiddelware.js";
 import { connectDB } from "./config/database.js";
 import {mountRoutes} from "./Routes/indexRoutes.js";
+import companyRoutes from "./Routes/companyRoutes.js";
 
 dotenv.config({ path: ".env" });
 
@@ -29,14 +30,16 @@ const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Global Error Handling Midleware for express
+app.use("/api/v1/company", companyRoutes);
 app.use(globalError);
 
-// Start the server
-// const port = process.env.PORT || 5000;
 
-// // Log the port number to confirm it's correct
-// app.listen(port, () => {
-//   console.log(`Server is running on port ${port}`);
-// });
+// Start the server
+const port = process.env.PORT || 5000;
+
+// Log the port number to confirm it's correct
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 export default app;
