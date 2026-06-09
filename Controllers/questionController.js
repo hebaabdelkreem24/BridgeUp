@@ -2,7 +2,7 @@ import { uploadQuestionsService } from "../Services/questionService.js";
 
 export const uploadQuestions = async (req, res) => {
   try {
-    const { examId } = req.params;
+    const { quizId } = req.params;
 
     if (!req.file) {
       return res.status(400).json({
@@ -11,7 +11,7 @@ export const uploadQuestions = async (req, res) => {
     }
 
     const count = await uploadQuestionsService(
-      examId,
+      quizId,
       req.file.buffer
     );
 
