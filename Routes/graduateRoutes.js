@@ -4,6 +4,7 @@ import {
   getMyProfile,
   updateMyProfile,
   updateDocumentsAndLinks,
+  getMyRoadmap,
 } from "../Controllers/graduateController.js";
 import { protect, allowOnly } from "../Services/authService.js";
 
@@ -23,4 +24,5 @@ graduateRouter.put(
   allowOnly("graduate"),
   updateDocumentsAndLinks,
 );
+graduateRouter.get("/me/roadmap", protect, allowOnly("graduate"), getMyRoadmap);
 export default graduateRouter;

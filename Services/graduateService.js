@@ -1,6 +1,9 @@
 import ApiError from "../utils/apiError.js";
 import Assessment from "../Models/assessmentModel.js";
 import Graduate from "../Models/graduateModel.js";
+import Roadmap from "../Models/roadmapModel.js";
+import Phase from "../Models/phaseModel.js";
+import Resource from "../Models/resourceModel.js";
 
 // Get graduate profile
 export const getMyProfileService = async (graduateId) => {
@@ -79,4 +82,57 @@ export const updateDocumentsAndLinksService = async (
   await graduate.save();
 
   return graduate;
+};
+
+// Get graduate roadmap
+export const getMyRoadmapService = async (graduateId) => {
+  const graduate = await Graduate.findById(graduateId);
+
+  if (!graduate) {
+    throw new Error("Graduate not found");
+  }
+
+  const roadmap = await Roadmap.findOne({
+    track: graduate.track,
+  });
+
+  if (!roadmap) {
+    throw new Error(
+      `No roadmap found for track: ${graduate.track}`,
+    );
+  }
+
+  const phases = await Phase.find({
+    roadmap: roadmap._id,
+  }).sort("order");
+
+  const phasesWithResources = await Promise.all(
+    phases.map(async (phase) => {
+      const resources = await Resource.find({
+        phase: phase._id,
+      });
+
+      const docs = resources.filter(
+        (resource) => resource.type === "doc",
+      ).length;
+
+      const videos = resources.filter(
+        (resource) => resource.type === "video",
+      ).length;
+
+      return {
+        _id: phase._id,
+        title: phase.title,
+        order: phase.order,
+        resources,
+        summary: `${docs} docs + ${videos} videos`,
+      };
+    }),
+  );
+
+  return {
+    _id: roadmap._id,
+    track: roadmap.track,
+    phases: phasesWithResources,
+  };
 };

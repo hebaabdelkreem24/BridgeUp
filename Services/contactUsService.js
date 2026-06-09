@@ -65,3 +65,22 @@ export const deleteAllMessagesService = async () => {
 
   return result;
 };
+
+// Service function to get statistics about contact us messages
+export const getMessagesStatsService = async () => {
+  const totalMessages = await ContactUs.countDocuments();
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const todayMessages = await ContactUs.countDocuments({
+    createdAt: {
+      $gte: today,
+    },
+  });
+
+  return {
+    totalMessages,
+    todayMessages,
+  };
+};
