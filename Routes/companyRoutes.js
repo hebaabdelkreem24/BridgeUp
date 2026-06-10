@@ -9,7 +9,7 @@ import {getCompanyProfile,
   removeFromShortlist, 
   getShortlisted} from "../Controllers/companyController.js";
 const router = express.Router();
-router.use(protect, restrictTo("Company"));
+router.use(protect, restrictTo("company"));
 
 router.get("/profile", getCompanyProfile);
 router.put("/profile", updateCompanyProfile);

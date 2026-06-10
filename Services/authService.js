@@ -49,6 +49,7 @@ export const protect = asyncHandler(async (req, res, next) => {
 // Middleware to allow access only to specific roles
 export const allowOnly = (...roles) => {
   return (req, res, next) => {
+    const userRole = req.user.role?.toLowerCase();
     if (!roles.includes(req.user.role)) {
       return next(
         new ApiError(
@@ -121,7 +122,7 @@ export const graduateSignupService = async (body, file) => {
   });
   console.log("Assessment Created:", assessment);
 
-  const token = generateToken(graduate._id, "Graduate");
+  const token = generateToken(graduate._id, "graduate");
 
   return {
     token,
@@ -182,7 +183,7 @@ export const companySignupService = async (body, files) => {
     taxCard: taxCardPath,
     isApproved: false,
   });
-  const token = generateToken(company._id, "Company");
+  const token = generateToken(company._id, "company");
 
   return {
     token,
@@ -216,11 +217,11 @@ export const loginService = async (email, password) => {
   if (!isMatch) throw new ApiError("Invalid email or password", 401);
 
   let role;
-  if (graduate) role = "Graduate";
-  else if (company) role = "Company";
-  else if (admin) role = "Admin";
+  if (graduate) role = "graduate";
+  else if (company) role = "company";
+  else if (admin) role = "admin";
 
-  if (role === "Company" && !user.isApproved) {
+  if (role === "company" && !user.isApproved) {
     throw new ApiError("Your account is pending admin approval.", 403);
   }
 

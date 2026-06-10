@@ -6,6 +6,7 @@ import {
   getMyOffersService,
   respondToOfferService,
   getAllOffersService,
+  getCompanyOfferStatsService,
 } from "../Services/offerJobService.js";
 
 // ─────────────────────────────────────────────
@@ -43,7 +44,18 @@ export const getMySentOffers = asyncHandler(async (req, res) => {
 export const deleteOffer = asyncHandler(async (req, res) => {
   await deleteOfferService(req.params.id, req.user._id);
 
-  res.status(200).send();
+  res.status(200).json({
+    status: "success",
+    message: "Offer deleted successfully",
+  });
+});
+
+export const getCompanyOfferStats= asyncHandler(async(req,res)=>{
+  const stats = await getCompanyOfferStatsService(req.user._id);
+  res.status(200).json({
+    status:"success",
+    data: stats,
+  });
 });
 
 // ─────────────────────────────────────────────
@@ -79,7 +91,7 @@ export const acceptOffer = asyncHandler(async (req, res) => {
 // @route   PATCH /api/v1/offers/:id/decline
 // @access  Private (Graduate only)
 export const declineOffer = asyncHandler(async (req, res) => {
-  const offer = await respondToOfferService(req.params.id, req.user._id, "declined");
+  const offer = await respondToOfferService(req.params.id, req.user._id, "rejected");
 
   res.status(200).json({
     status: "success",

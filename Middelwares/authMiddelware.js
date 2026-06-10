@@ -23,11 +23,11 @@ export const protect = async (req, res, next) => {
 
     // 3) Find user by id & role
     let user;
-    if (decoded.role === "Graduate") {
+    if (decoded.role === "graduate") {
       user = await Graduate.findById(decoded.userId);
-    } else if (decoded.role === "Company") {
+    } else if (decoded.role === "company") {
       user = await Company.findById(decoded.userId);
-    } else if (decoded.role === "Admin") {
+    } else if (decoded.role === "admin") {
       user = await Admin.findById(decoded.userId);
     }
     console.log("👤 Found user:", !!user, "Role:", decoded.role);
@@ -47,6 +47,7 @@ export const protect = async (req, res, next) => {
 // Role restriction
 export const restrictTo = (...roles) => {
   return (req, res, next) => {
+  const userRole = req.user.role?.toLowerCase();
     if (!roles.includes(req.user.role)) {
       return next(new ApiError("No permission", 403));
     }

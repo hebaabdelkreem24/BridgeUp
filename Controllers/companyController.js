@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import Company from "../Models/companyModel.js";
 import Graduate from "../Models/graduateModel.js";
 import Shortlist from "../Models/shortlistcompModel.js";
+import Offer from "../Models/offerJobModel.js";  // ← NEW
 import ApiError from "../utils/apiError.js";
 
 
@@ -11,6 +12,13 @@ export const getCompanyProfile = asyncHandler(async(req,res)=>{
     const totalGraduates = await Graduate.countDocuments();
     const frontendCount = await Graduate.countDocuments({track:"Frontend"});
     const backendCount = await Graduate.countDocuments({track:"Backend"});
+
+
+    const [totalContacted, acceptedOffers, shortlistedCount] = await Promise.all([
+    Offer.countDocuments({ company: company._id }),
+    Offer.countDocuments({ company: company._id, status: "accepted" }),
+    Shortlist.countDocuments({ company: company._id }),
+]);
 
     res.status(200).json({
         status: "success",
@@ -31,11 +39,14 @@ export const getCompanyProfile = asyncHandler(async(req,res)=>{
         isStarred: company.isStarred,
         createdAt: company.createdAt,
 },
-      stats:{
+    stats:{
         totalGraduates,
         frontendGraduates : frontendCount,
         backendGraduates : backendCount,
-      },
+        graduatesContacted: totalContacted,
+        shortlistedCount,
+        acceptedOffers,
+    },
             },
         });
     });

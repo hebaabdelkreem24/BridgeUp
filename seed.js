@@ -29,7 +29,7 @@ const seedData = async () => {
       iqScore: 85,
   englishScore: 90,
   technicalScore: 88,
-      role: "Graduate",
+      role: "graduate",
     });
 
     // Company Test User (Approved)
@@ -44,7 +44,7 @@ const seedData = async () => {
       commercialRegister: "12345",
       taxCard: "67890",
       isApproved: true,
-      role: "Company",
+      role: "company",
     });
 
     console.log("✅ Test users created!");

@@ -31,7 +31,7 @@ const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Global Error Handling Midleware for express
-// app.use("/api/v1/company", companyRoutes);
+app.use("/api/v1/company", companyRoutes);
 app.use(globalError);
 
 
