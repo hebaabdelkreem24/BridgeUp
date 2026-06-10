@@ -37,9 +37,7 @@ export const updateMyProfileService = async (graduateId, data) => {
       age: data.age,
       university: data.university,
       graduationYear: data.graduationYear,
-      portfolioLink: data.portfolioLink,
-      gitHubProfile: data.gitHubProfile,
-      linkedInProfile: data.linkedInProfile,
+      profilePicture,
     },
     { new: true, runValidators: true }
   );

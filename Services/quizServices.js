@@ -1,5 +1,6 @@
 import ApiError from "../utils/ApiError.js";
 import Quiz from "../Models/quizModel.js";
+import Question from "../Models/questionsModel.js";
 
 export const createQuizService = async (data) => {
   return await Quiz.create(data);
@@ -10,5 +11,5 @@ export const getAllQuizService = async () => {
 };
 
 export const getQuizByIdService = async (id) => {
-  return await Quiz.findById(id);
+  return await Question.find({ quiz: quizId }).select("-answers.isCorrect");
 };
