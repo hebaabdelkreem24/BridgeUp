@@ -1,4 +1,11 @@
-import { uploadQuestionsService } from "../Services/questionService.js";
+import asyncHandler from "express-async-handler";
+import {
+  uploadQuestionsService,
+  getAllQuestionsForAdminService,
+  getGroupedQuestionsService,
+  getMyExamsService,
+  getQuestionsForStudentService,
+} from "../Services/questionService.js";
 
 export const uploadQuestions = async (req, res) => {
   try {
@@ -10,10 +17,7 @@ export const uploadQuestions = async (req, res) => {
       });
     }
 
-    const count = await uploadQuestionsService(
-      quizId,
-      req.file.buffer
-    );
+    const count = await uploadQuestionsService(quizId, req.file.buffer);
 
     res.status(201).json({
       status: "success",
@@ -26,3 +30,47 @@ export const uploadQuestions = async (req, res) => {
     });
   }
 };
+
+export const getAllQuestionsForAdmin = asyncHandler(async (req, res) => {
+  const questions = await getAllQuestionsForAdminService();
+
+  res.status(200).json({
+    status: "success",
+    results: questions.length,
+    data: questions,
+  });
+});
+
+export const getGroupedQuestions = asyncHandler(async (req, res) => {
+  const data = await getGroupedQuestionsService();
+
+  res.status(200).json({
+    status: "success",
+    data,
+  });
+});
+
+export const getMyExams = asyncHandler(async (req, res) => {
+  const userTrack = req.user.track;
+
+  const quizzes = await getMyExamsService(userTrack);
+
+  res.status(200).json({
+    status: "success",
+    results: quizzes.length,
+    data: quizzes,
+  });
+});
+
+export const getQuestionsForGraduate = asyncHandler(async (req, res) => {
+  const quizId = req.params.quizId;
+
+  const userId = req.user._id; 
+
+  const questions = await getQuestionsForStudentService(quizId, userId);
+
+  res.status(200).json({
+    status: "success",
+    data: questions,
+  });
+});

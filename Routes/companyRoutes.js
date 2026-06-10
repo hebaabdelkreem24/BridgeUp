@@ -1,15 +1,17 @@
 import express from "express";
 import { companySignup } from "../Controllers/authController.js";
 import { uploadCompanyFiles } from "../Middelwares/uploadMiddelware.js";
-import{protect , restrictTo} from "../Middelwares/authMiddelware.js";
-import {getCompanyProfile,
+import { protect, allowOnly } from "../Services/authService.js";
+import {
+  getCompanyProfile,
   updateCompanyProfile,
   getAllGraduates,
-  addToShortlist,     
-  removeFromShortlist, 
-  getShortlisted} from "../Controllers/companyController.js";
+  addToShortlist,
+  removeFromShortlist,
+  getShortlisted,
+} from "../Controllers/companyController.js";
 const router = express.Router();
-router.use(protect, restrictTo("Company"));
+router.use(protect, allowOnly("Company"));
 
 router.get("/profile", getCompanyProfile);
 router.put("/profile", updateCompanyProfile);

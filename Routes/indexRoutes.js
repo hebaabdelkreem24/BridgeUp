@@ -9,7 +9,8 @@ import resourceRouter from "./resourceRoutes.js";
 import offerRouter from "./offerJobRoute.js";
 import quizRouter from "./quizRoutes.js";
 import questionRouter from "./questionRoutes.js";
-
+import companyRoutes from "./companyRoutes.js";
+import examRouter from "./examRoutes.js"
 // Mount routers
 export const mountRoutes = (app) => {
   app.use("/api/v1/auth", authRouter);
@@ -23,4 +24,6 @@ export const mountRoutes = (app) => {
   app.use("/api/v1/offers", offerRouter);
   app.use("/api/v1/quiz", quizRouter);
   app.use("/api/v1/questions", questionRouter);
+  app.use("/api/v1/company", companyRoutes);
+  app.use("/api/v1/exams",examRouter)
 };
