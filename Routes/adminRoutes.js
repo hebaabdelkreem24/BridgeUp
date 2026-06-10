@@ -2,7 +2,13 @@ import express from "express";
 
 import { allowOnly } from "../Services/authService.js";
 import * as adminCompanyController  from "../Controllers/adminCompanyController.js";
-import * as adminController from "../Controllers/AdminController.js";
+// import * as adminController from "../Controllers/AdminController.js";
+import {
+  getStats,
+  getAllGraduates,
+  getCompaniesDashboardController,
+  getAllGraduatesWithFilters,
+} from "../Controllers/AdminController.js";
 import { protect, restrictTo } from "../Middelwares/authMiddelware.js";
 
 const adminRouter = express.Router();
@@ -16,6 +22,7 @@ adminRouter.get("/companies/starred", adminCompanyController.getStarredCompanies
 
 // Get platform statistics (Admin only)
 adminRouter.get("/stats", protect, allowOnly("admin"), getStats);
+
 // Get all graduates with scores + pagination (Admin only)
 adminRouter.get("/graduates", protect, allowOnly("admin"), getAllGraduates);
 // Get companies dashboard data (Admin only)
