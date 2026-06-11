@@ -1,5 +1,5 @@
 import ContactUs from "../Models/contactUsModel.js";
-import ApiError from "../utils/APIError.js";
+import ApiError from "../utils/apiError.js";
 
 // Service function to handle contact us form submission
 export const submitContactUsForm = async (body) => {
