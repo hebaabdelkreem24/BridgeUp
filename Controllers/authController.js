@@ -1,10 +1,7 @@
 import asyncHandler from "express-async-handler";
 import ApiError from "../utils/apiError.js";
-import Graduate from "../Models/graduateModel.js";
-import Company from "../Models/companyModel.js";
 import { generateToken } from "../utils/generateToken.js";
 import {
-  isEmailTaken,
   graduateSignupService,
   companySignupService,
   loginService,
@@ -14,8 +11,6 @@ import {
   createAdmin,
   loginAdmin,
 } from "../Services/authService.js";
-
-
 
 // @desc    Select Role
 // @route   POST /api/auth/select-role
@@ -27,7 +22,6 @@ export const selectRole = asyncHandler(async (req, res, next) => {
     return next(new ApiError("Please select a valid role", 400));
   }
 
-  // Convert to capitalize (graduate → Graduate, COMPANY → Company)
   const normalizedRole =
     role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
 
@@ -112,8 +106,8 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
 // @route   POST /api/admins
 // @access  Private
 export const createAdminController = asyncHandler(async (req, res) => {
-    const admin = await createAdmin(req.body);
-    const token = generateToken(admin._id);
+  const admin = await createAdmin(req.body);
+  const token = generateToken({ _id: admin._id, role: "admin" });
   res.status(201).json({ admin, token });
 });
 
@@ -121,7 +115,7 @@ export const createAdminController = asyncHandler(async (req, res) => {
 // @route   POST /api/admins/login
 // @access  Private
 export const loginAdminController = asyncHandler(async (req, res) => {
-    const admin = await loginAdmin(req.body);
-    const token = generateToken(admin._id);
-    res.status(200).json({ admin, token });
+  const admin = await loginAdmin(req.body);
+  const token = generateToken({ _id: admin._id, role: "admin" });
+  res.status(200).json({ admin, token });
 });

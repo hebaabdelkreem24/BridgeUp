@@ -63,7 +63,7 @@ export const allowOnly = (...roles) => {
 
 // Middleware to check if a company is approved by the admin
 export const isApprovedCompany = asyncHandler(async (req, res, next) => {
-  if (req.user.role === "Company" && !req.user.isApproved) {
+  if (req.user.role === "company" && !req.user.isApproved) {  // ← small c
     return next(
       new ApiError("Your account is pending approval by the admin", 403),
     );
@@ -84,6 +84,7 @@ export const graduateSignupService = async (body, file) => {
     university,
     graduationYear,
     track,
+    profilePicture,
     portfolioLink,
     linkedInProfile,
     gitHubProfile,
@@ -120,7 +121,7 @@ export const graduateSignupService = async (body, file) => {
   });
   console.log("Assessment Created:", assessment);
 
-  const token = generateToken(graduate._id, "Graduate");
+  const token = generateToken({ _id: graduate._id, role: "graduate" });  // ✅ small g
 
   return {
     token,
@@ -129,8 +130,6 @@ export const graduateSignupService = async (body, file) => {
       fullName: graduate.fullName,
       email: graduate.email,
       phone: graduate.phone,
-      password: graduate.password,
-      confirmPassword: graduate.confirmPassword,
       age: graduate.age,
       gender: graduate.gender,
       track: graduate.track,
@@ -182,12 +181,14 @@ export const companySignupService = async (body, files) => {
     isApproved: false,
   });
 
+  const token = generateToken({ _id: company._id, role: "company" });  // ← NEW + small c
+
   return {
+    token,  // ← NEW
     company: {
       id: company._id,
       companyName: company.companyName,
       email: company.email,
-      password,
       phone: company.phone,
       description: company.description,
       industry: company.industry,
@@ -213,11 +214,11 @@ export const loginService = async (email, password) => {
   if (!isMatch) throw new ApiError("Invalid email or password", 401);
 
   let role;
-  if (graduate) role = "Graduate";
-  else if (company) role = "Company";
-  else if (admin) role = "Admin";
+  if (graduate) role = "graduate";      // ← small g
+  else if (company) role = "company";   // ← small c
+  else if (admin) role = "admin";       // ← small a
 
-  if (role === "Company" && !user.isApproved) {
+  if (role === "company" && !user.isApproved) {  // ← small c
     throw new ApiError("Your account is pending admin approval.", 403);
   }
 
@@ -233,6 +234,7 @@ export const loginService = async (email, password) => {
     },
   };
 };
+
 // Service function for sending password reset email
 export const forgetPasswordService = async (email) => {
   const [graduate, company] = await Promise.all([
@@ -243,7 +245,7 @@ export const forgetPasswordService = async (email) => {
   const user = graduate || company;
   if (!user) throw new ApiError("User not found", 404);
 
-  const role = graduate ? "Graduate" : "Company";
+  const role = graduate ? "graduate" : "company";  // ← small
 
   const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
   const hashedResetCode = crypto
@@ -322,8 +324,6 @@ export const resetPasswordService = async (email, newPassword) => {
   await user.save();
   return true;
 };
-
-// Service function for admin login
 
 // Function to create a new admin
 export const createAdmin = asyncHandler(async (body) => {

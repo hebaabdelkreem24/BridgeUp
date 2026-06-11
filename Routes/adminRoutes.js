@@ -1,36 +1,22 @@
 import express from "express";
-
-import { allowOnly } from "../Services/authService.js";
-import * as adminCompanyController  from "../Controllers/adminCompanyController.js";
+import { allowOnly, protect } from "../Services/authService.js";
+import * as adminCompanyController from "../Controllers/adminCompanyController.js";
 import * as adminController from "../Controllers/AdminController.js";
-import { protect, restrictTo } from "../Middelwares/authMiddelware.js";
 
 const adminRouter = express.Router();
-// Companies
-adminRouter.get("/companies",adminCompanyController.getAllCompanies);
-adminRouter.get("/companies/:id",adminCompanyController.getCompanyprofile);
-adminRouter.patch("/companies/:id/approve", adminCompanyController.approveCompany);
-adminRouter.patch("/companies/:id/reject", adminCompanyController.rejectCompany);
-adminRouter.patch("/companies/:id/star", adminCompanyController.toggleStarCompany);
-adminRouter.get("/companies/starred", adminCompanyController.getStarredCompanies);
 
-// Get platform statistics (Admin only)
-adminRouter.get("/stats", protect, allowOnly("Admin"), adminController.getStats);
-// Get all graduates with scores + pagination (Admin only)
-adminRouter.get("/graduates", protect, allowOnly("Admin"), adminController.getAllGraduates);
-// Get companies dashboard data (Admin only)
-adminRouter.get(
-  "/companies-dashboard",
-  protect,
-  allowOnly("Admin"),
-  adminController.getCompaniesDashboardController,
-);
-// Get all graduates with filters + pagination (Admin only)
-adminRouter.get(
-  "/all-graduates",
-  protect,
-  allowOnly("Admin"),
-  adminController.getAllGraduatesWithFilters,
-);
+// Companies
+adminRouter.get("/companies", protect, allowOnly("admin"), adminCompanyController.getAllCompanies);
+adminRouter.get("/companies/:id", protect, allowOnly("admin"), adminCompanyController.getCompanyprofile);
+adminRouter.patch("/companies/:id/approve", protect, allowOnly("admin"), adminCompanyController.approveCompany);
+adminRouter.patch("/companies/:id/reject", protect, allowOnly("admin"), adminCompanyController.rejectCompany);
+adminRouter.patch("/companies/:id/star", protect, allowOnly("admin"), adminCompanyController.toggleStarCompany);
+adminRouter.get("/companies/starred", protect, allowOnly("admin"), adminCompanyController.getStarredCompanies);
+
+// Stats & Graduates
+adminRouter.get("/stats", protect, allowOnly("admin"), adminController.getStats);
+adminRouter.get("/graduates", protect, allowOnly("admin"), adminController.getAllGraduates);
+adminRouter.get("/companies-dashboard", protect, allowOnly("admin"), adminController.getCompaniesDashboardController);
+adminRouter.get("/all-graduates", protect, allowOnly("admin"), adminController.getAllGraduatesWithFilters);
 
 export default adminRouter;
