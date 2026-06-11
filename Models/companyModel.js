@@ -65,6 +65,8 @@ const companySchema = new mongoose.Schema(
     // Meta
     role: {
       type: String,
+      enum: ["company"],
+      default: "company",
     }, isApproved: {
       type: Boolean,
       default: false, // Admin approval required

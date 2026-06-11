@@ -1,9 +1,28 @@
 import express from "express";
-import { getAssessmentMe } from "../Controllers/graduateController.js";
+import {
+  getAssessmentMe,
+  getMyProfile,
+  updateMyProfile,
+  updateDocumentsAndLinks,
+  getMyRoadmap,
+} from "../Controllers/graduateController.js";
 import { protect, allowOnly } from "../Services/authService.js";
 
 const graduateRouter = express.Router();
 
-graduateRouter.get("/assessments/me", protect, getAssessmentMe);
-
+graduateRouter.get(
+  "/assessments/me",
+  protect,
+  allowOnly("graduate"),
+  getAssessmentMe,
+);
+graduateRouter.get("/me", protect, allowOnly("graduate"), getMyProfile);
+graduateRouter.put("/me", protect, allowOnly("graduate"), updateMyProfile);
+graduateRouter.put(
+  "/me/documents",
+  protect,
+  allowOnly("graduate"),
+  updateDocumentsAndLinks,
+);
+graduateRouter.get("/me/roadmap", protect, allowOnly("graduate"), getMyRoadmap);
 export default graduateRouter;
