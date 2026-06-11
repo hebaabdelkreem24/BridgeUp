@@ -246,12 +246,9 @@ export const loginService = async (email, password) => {
 } 
 };
 
-<<<<<<< HEAD
 
 
 
-=======
->>>>>>> heba2
 // Service function for sending password reset email
 export const forgetPasswordService = async (email) => {
   const [graduate, company] = await Promise.all([
