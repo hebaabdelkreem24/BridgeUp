@@ -1,16 +1,15 @@
 import asyncHandler from "express-async-handler";
 import ApiError from "../utils/apiError.js";
-import Graduate from "../Models/graduateModel.js";
-import Company from "../Models/companyModel.js";
 import { generateToken } from "../utils/generateToken.js";
 import {
-  isEmailTaken,
   graduateSignupService,
   companySignupService,
   loginService,
   forgetPasswordService,
   verifyResetCodeService,
   resetPasswordService,
+  createAdmin,
+  loginAdmin,
 } from "../Services/authService.js";
 
 // @desc    Select Role
@@ -23,7 +22,6 @@ export const selectRole = asyncHandler(async (req, res, next) => {
     return next(new ApiError("Please select a valid role", 400));
   }
 
-  // Convert to capitalize (graduate → Graduate, COMPANY → Company)
   const normalizedRole =
     role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
 
@@ -52,9 +50,6 @@ export const graduateSignup = asyncHandler(async (req, res, next) => {
 // @route   POST /api/auth/signup-comp
 // @access  Public
 export const companySignup = asyncHandler(async (req, res, next) => {
-    console.log("📥 Controller received:");
-  console.log("Controller - req.files:", req.files);
-  console.log("Controller - req.body:", req.body);
   const data = await companySignupService(req.body, req.files);
   res.status(201).json({
     status: "success",
@@ -106,4 +101,22 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
     status: "success",
     message: "Password reset successfully, you can now log in with your new password",
   });
+});
+
+// @desc    Create a new admin
+// @route   POST /api/admins
+// @access  Private
+export const createAdminController = asyncHandler(async (req, res) => {
+  const admin = await createAdmin(req.body);
+  const token = generateToken({ _id: admin._id, role: "admin" });
+  res.status(201).json({ admin, token });
+});
+
+// @desc    Login an admin
+// @route   POST /api/admins/login
+// @access  Private
+export const loginAdminController = asyncHandler(async (req, res) => {
+  const admin = await loginAdmin(req.body);
+  const token = generateToken({ _id: admin._id, role: "admin" });
+  res.status(200).json({ admin, token });
 });

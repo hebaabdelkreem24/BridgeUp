@@ -53,9 +53,31 @@ const graduateSchema = new mongoose.Schema(
       required: [true, "Please enter your track"],
       enum: ["Frontend", "Backend"],
     },
+    iqScore: {
+  type: Number,
+  min: 0,
+  max: 100,
+  default: null,
+},
+englishScore: {
+  type: Number,
+  min: 0,
+  max: 100,
+  default: null,
+},
+technicalScore: {
+  type: Number,
+  min: 0,
+  max: 100,
+  default: null,
+},
     role: {
       type: String,
     },  
+    profilePicture: {
+      type: String,
+      default: "/uploads/defaultProfilePicture.png",
+    },
     cv: String,
     gitHubProfile: String,
     linkedInProfile: String,

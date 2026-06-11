@@ -37,6 +37,10 @@ const companySchema = new mongoose.Schema(
       type: String,
       maxLength: [500, "Description cannot exceed 500 characters"],
     },
+    logo: {
+      type: String,
+      default: "/uploads/defaultCompanyLogo.png",
+    },
     // Required Documents
     commercialRegister: {
       type: String,
@@ -89,6 +93,7 @@ companySchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, 12);
 });
 
-const Company = mongoose.model("Company", companySchema);
+const Company =
+  mongoose.models.Company || mongoose.model("Company", companySchema);
 
 export default Company;

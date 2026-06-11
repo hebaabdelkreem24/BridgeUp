@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import Graduate from "../Models/graduateModel.js";
 import Company from "../Models/companyModel.js";
 import Admin from "../Models/adminModel.js";
+import Assessment from "../Models/assessmentModel.js";
 import { resetPasswordTemplate } from "../utils/emailTemplate.js";
 import { generateToken } from "../utils/generateToken.js";
 import sendEmail from "../utils/sendEmail.js";
@@ -30,15 +31,13 @@ export const protect = asyncHandler(async (req, res, next) => {
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-  let user;
-  if (decoded.role === "Graduate") {
-    user = await Graduate.findById(decoded.userId).select("-password");
-  } else if (decoded.role === "Company") {
-    user = await Company.findById(decoded.userId).select("-password");
-  } else if (decoded.role === "Admin") {
-    user = await Admin.findById(decoded.userId).select("-password");
-  }
+  const [graduate, company, admin] = await Promise.all([
+    Graduate.findOne({ _id: decoded.userId }).select("+password"),
+    Company.findOne({ _id: decoded.userId }).select("+password"),
+    Admin.findOne({ _id: decoded.userId }).select("+password"),
+  ]);
 
+  const user = graduate || company || admin;
   if (!user) {
     return next(new ApiError("Not authorized, user not found", 401));
   }
@@ -64,7 +63,7 @@ export const allowOnly = (...roles) => {
 
 // Middleware to check if a company is approved by the admin
 export const isApprovedCompany = asyncHandler(async (req, res, next) => {
-  if (req.user.role === "Company" && !req.user.isApproved) {
+  if (req.user.role === "company" && !req.user.isApproved) {  // ← small c
     return next(
       new ApiError("Your account is pending approval by the admin", 403),
     );
@@ -85,6 +84,7 @@ export const graduateSignupService = async (body, file) => {
     university,
     graduationYear,
     track,
+    profilePicture,
     portfolioLink,
     linkedInProfile,
     gitHubProfile,
@@ -110,13 +110,18 @@ export const graduateSignupService = async (body, file) => {
     university,
     graduationYear,
     track,
+    profilePicture: profilePicture || null,
     cv: cvPath,
     portfolioLink: portfolioLink || null,
     linkedInProfile: linkedInProfile || null,
     gitHubProfile: gitHubProfile || null,
   });
+  const assessment = await Assessment.create({
+    graduate: graduate._id,
+  });
+  console.log("Assessment Created:", assessment);
 
-  const token = generateToken(graduate._id, "Graduate");
+  const token = generateToken({ _id: graduate._id, role: "graduate" });  // ✅ small g
 
   return {
     token,
@@ -125,12 +130,12 @@ export const graduateSignupService = async (body, file) => {
       fullName: graduate.fullName,
       email: graduate.email,
       phone: graduate.phone,
-      password: graduate.password,
       age: graduate.age,
       gender: graduate.gender,
       track: graduate.track,
       university: graduate.university,
     },
+    assessment,
   };
 };
 
@@ -176,17 +181,19 @@ export const companySignupService = async (body, files) => {
     isApproved: false,
   });
 
+  const token = generateToken({ _id: company._id, role: "company" });  // ← NEW + small c
+
   return {
+    token,  // ← NEW
     company: {
       id: company._id,
       companyName: company.companyName,
       email: company.email,
-          password,
       phone: company.phone,
       description: company.description,
       industry: company.industry,
-          taxCard: taxCardPath,
-          commercialRegister: commercialRegisterPath,
+      taxCard: taxCardPath,
+      commercialRegister: commercialRegisterPath,
       isApproved: company.isApproved,
     },
   };
@@ -210,11 +217,11 @@ export const loginService = async (email, password) => {
   if (!isMatch) throw new ApiError("Invalid email or password", 401);
 
   let role;
-  if (graduate) role = "Graduate";
-  else if (company) role = "Company";
-  else if (admin) role = "Admin";
+  if (graduate) role = "graduate";      // ← small g
+  else if (company) role = "company";   // ← small c
+  else if (admin) role = "admin";       // ← small a
 
-  if (role === "Company" && !user.isApproved) {
+  if (role === "company" && !user.isApproved) {  // ← small c
     throw new ApiError("Your account is pending admin approval.", 403);
   }
 
@@ -239,9 +246,12 @@ export const loginService = async (email, password) => {
 } 
 };
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> heba2
 // Service function for sending password reset email
 export const forgetPasswordService = async (email) => {
   const [graduate, company] = await Promise.all([
@@ -252,7 +262,7 @@ export const forgetPasswordService = async (email) => {
   const user = graduate || company;
   if (!user) throw new ApiError("User not found", 404);
 
-  const role = graduate ? "Graduate" : "Company";
+  const role = graduate ? "graduate" : "company";  // ← small
 
   const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
   const hashedResetCode = crypto
@@ -331,3 +341,20 @@ export const resetPasswordService = async (email, newPassword) => {
   await user.save();
   return true;
 };
+
+// Function to create a new admin
+export const createAdmin = asyncHandler(async (body) => {
+  const { name, email, password } = body;
+
+  const admin = await Admin.create({ name, email, password });
+  return admin;
+});
+
+export const loginAdmin = asyncHandler(async (body) => {
+  const { email, password } = body;
+  const admin = await Admin.findOne({ email });
+  if (!admin || !(await bcrypt.compare(password, admin.password))) {
+    throw new Error("Invalid credentials");
+  }
+  return admin;
+});

@@ -1,10 +1,16 @@
 import mongoose from "mongoose";
+<<<<<<< HEAD
 // import bcrypt from "bcryptjs";
+=======
+>>>>>>> heba2
 import Graduate from "./Models/graduateModel.js";
 import Company from "./Models/companyModel.js";
 import Admin from "./Models/adminModel.js";
 import dotenv from "dotenv";
+<<<<<<< HEAD
 
+=======
+>>>>>>> heba2
 dotenv.config({ path: ".env" });
 
 const seedData = async () => {
@@ -12,13 +18,15 @@ const seedData = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("✅ Connected to MongoDB");
 
-    // مسح القديم
     await Graduate.deleteMany();
     await Company.deleteMany();
     await Admin.deleteMany();
 
+<<<<<<< HEAD
     // Graduate Test User
     // const gradPassword = await bcrypt.hash("12345678", 12);
+=======
+>>>>>>> heba2
     await Graduate.create({
       fullName: "Test Graduate",
       email: "graduate@test.com",
@@ -29,11 +37,17 @@ const seedData = async () => {
       university: "Cairo University",
       graduationYear: 2024,
       track: "Frontend",
-      role: "Graduate",
+      iqScore: 85,
+      englishScore: 90,
+      technicalScore: 88,
+      role: "graduate",
     });
 
+<<<<<<< HEAD
     // Company Test User (Approved)
     // const compPassword = await bcrypt.hash("12345678", 12);
+=======
+>>>>>>> heba2
     await Company.create({
       companyName: "Test Company",
       email: "company@test.com",
@@ -44,7 +58,7 @@ const seedData = async () => {
       commercialRegister: "12345",
       taxCard: "67890",
       isApproved: true,
-      role: "Company",
+      role: "company",
     });
 
 //     // const plainPassword = "admin123";

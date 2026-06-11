@@ -1,16 +1,9 @@
 import express from "express";
-import { graduateSignup } from "../Controllers/authController.js";
-import { graduateSignUpValidator } from "../utils/validators/graduateValidator.js";
-import { uploadSingleFile } from "../Middelwares/uploadMiddelware.js";
+import { getAssessmentMe } from "../Controllers/graduateController.js";
+import { protect, allowOnly } from "../Services/authService.js";
 
-const router = express.Router();
+const graduateRouter = express.Router();
 
-// POST /api/v1/graduates/signup
-router.post(
-  "/signup",
-  uploadSingleFile,
-  graduateSignUpValidator,
-  graduateSignup,
-);
+graduateRouter.get("/assessments/me", protect, getAssessmentMe);
 
-export default router;
+export default graduateRouter;

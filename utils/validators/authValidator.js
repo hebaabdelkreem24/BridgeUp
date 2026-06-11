@@ -29,7 +29,7 @@ export const signupGradValidator = [
     .withMessage("Phone number is required")
     .isMobilePhone(["ar-EG"])
     .withMessage("Please enter a valid phone number"),
-
+  
   check("age")
     .notEmpty()
     .withMessage("Age is required")
