@@ -9,6 +9,5 @@ const progressSchema = new mongoose.Schema({
 
 progressSchema.index({ graduate: 1, track: 1 }, { unique: true });
 
-const progressModel = mongoose.model("progress", progressSchema);
-
+const progressModel = mongoose.models.progress || mongoose.model("progress", progressSchema);
 export default progressModel;

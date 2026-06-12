@@ -18,5 +18,5 @@ const contactRequestSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-const ContactRequest = mongoose.model("ContactRequest", contactRequestSchema);
+const ContactRequest = mongoose.models.ContactRequest || mongoose.model("ContactRequest", contactRequestSchema);
 export default ContactRequest;

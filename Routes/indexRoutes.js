@@ -6,6 +6,13 @@ import graduateRouter from "./graduateRoutes.js";
 import companyRouter from "./companyRoutes.js";
 import notificationRouter from "./notificationRoutes.js";
 import offerRouter from "./offerJobRoute.js";
+import examRouter from "./examRoutes.js";
+import phaseRouter from "./phaseRoutes.js";
+import questionRouter from "./questionRoutes.js";
+import quizRouter from "./quizRoutes.js";
+import resourceRouter from "./resourceRoutes.js";
+import roadMapRouter from "./roadMapRoutes.js";
+import reportRouter from "./reportRoutes.js";
 
 export const mountRoutes = (app) => {
   app.use("/api/v1/auth", authRouter);
@@ -16,4 +23,11 @@ export const mountRoutes = (app) => {
   app.use("/api/v1/company", companyRouter);
   app.use("/api/v1/notifications", notificationRouter);
   app.use("/api/v1/offers", offerRouter);
+  app.use("/api/v1/exams", examRouter);
+  app.use("/api/v1/phases", phaseRouter);
+  app.use("/api/v1/questions", questionRouter);
+  app.use("/api/v1/quizzes", quizRouter);
+  app.use("/api/v1/resources", resourceRouter);
+  app.use("/api/v1/roadmaps", roadMapRouter);
+  app.use("/api/v1/admin/reports", reportRouter);
 };
