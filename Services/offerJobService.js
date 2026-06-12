@@ -1,5 +1,5 @@
-import Offer from "../models/offerJobModel.js";
-import ApiError from "../utils/ApiError.js";
+import Offer from "../Models/offerJobModel.js";
+import ApiError from "../utils/apiError.js";
 
 
 // ─────────────────────────────────────────────

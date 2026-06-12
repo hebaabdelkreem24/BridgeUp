@@ -1,4 +1,4 @@
-import ApiError from "../utils/ApiError.js";
+import ApiError from "../utils/apiError.js";
 import Quiz from "../Models/quizModel.js";
 import Question from "../Models/questionsModel.js";
 
