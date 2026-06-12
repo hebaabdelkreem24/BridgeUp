@@ -108,7 +108,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
 // @access  Private
 export const createAdminController = asyncHandler(async (req, res) => {
   const admin = await createAdmin(req.body);
-  const token = generateToken({ _id: admin._id, role: "admin" });
+  const token = generateToken(admin);
   res.status(201).json({ admin, token });
 });
 
@@ -117,6 +117,6 @@ export const createAdminController = asyncHandler(async (req, res) => {
 // @access  Private
 export const loginAdminController = asyncHandler(async (req, res) => {
   const admin = await loginAdmin(req.body);
-  const token = generateToken({ _id: admin._id, role: "admin" });
+  const token = generateToken(admin);
   res.status(200).json({ admin, token });
 });

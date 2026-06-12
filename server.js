@@ -9,6 +9,8 @@ import { mountRoutes } from "./Routes/indexRoutes.js";
 
 dotenv.config({ path: ".env" });
 
+
+
 console.log("JWT_SECRET from env:", process.env.JWT_SECRET_KEY);
 connectDB();
 

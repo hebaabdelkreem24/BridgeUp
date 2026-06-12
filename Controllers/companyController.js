@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import Company from "../Models/companyModel.js";
 import Graduate from "../Models/graduateModel.js";
+import Assessment from "../Models/assessmentModel.js";
 import Shortlist from "../Models/shortlistcompModel.js";
 import ApiError from "../utils/apiError.js";
 
@@ -86,13 +87,53 @@ export const getAllGraduates = asyncHandler(async (req, res) => {
   if (gender) query.gender = gender;
   if (graduationYear) query.graduationYear = parseInt(graduationYear);
 
-  if (minEnglishScore) query.englishScore = { $gte: parseInt(minEnglishScore) };
-  if (minTechnicalScore) query.technicalScore = { $gte: parseInt(minTechnicalScore) };
-  if (minIQScore) query.iqScore = { $gte: parseInt(minIQScore) };
+let graduates = await Graduate.find(query)
+    .select("-password -passwordResetCode -passwordResetExpiredAt -passwordResetVerified")
+    .sort("-createdAt")
+    .lean();
 
-  const graduates = await Graduate.find(query)
-    .select("-password -passwordResetToken -passwordResetExpiredAt -passwordResetVerified")
-    .sort("-createdAt");
+  // Step 3: جلب الـ Assessments
+  const graduateIds = graduates.map(g => g._id);
+
+      console.log("=== DEBUG ===");
+    console.log("Graduate IDs:", graduateIds);
+    console.log("Graduate IDs[0] type:", typeof graduateIds[0]);
+    
+
+  const assessments = await Assessment.find({
+    graduate: { $in: graduateIds }
+  }).lean();
+
+
+  
+  // Step 4: ربط الـ scores بالخريجين
+  const assessmentMap = {};
+  assessments.forEach(a => {
+    const gradId = a.graduate?._id ? String(a.graduate._id) : String(a.graduate);
+        assessmentMap[gradId] = a;
+  });
+
+  graduates = graduates.map(g => {
+    const assessment = assessmentMap[String(g._id)] || {};
+    return {
+      ...g,
+      iqScore: assessment.iqScore || 0,
+      englishScore: assessment.englishScore || 0,
+      technicalScore: assessment.technicalScore || 0,
+      assessmentStatus: assessment.status === "Completed" ? "completed": "pending",
+    };
+  });
+
+  // Step 5: فلترة بالـ scores
+  if (minEnglishScore) {
+    graduates = graduates.filter(g => g.englishScore >= parseInt(minEnglishScore));
+  }
+  if (minTechnicalScore) {
+    graduates = graduates.filter(g => g.technicalScore >= parseInt(minTechnicalScore));
+  }
+  if (minIQScore) {
+    graduates = graduates.filter(g => g.iqScore >= parseInt(minIQScore));
+  }
 
   res.status(200).json({
     status: "success",
@@ -100,6 +141,7 @@ export const getAllGraduates = asyncHandler(async (req, res) => {
     data: { graduates },
   });
 });
+
 
 export const addToShortlist = asyncHandler(async (req, res, next) => {
   const company = req.user._id;
