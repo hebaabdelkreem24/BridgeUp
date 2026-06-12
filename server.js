@@ -9,38 +9,29 @@ import { mountRoutes } from "./Routes/indexRoutes.js";
 
 dotenv.config({ path: ".env" });
 
-// import { protect } from "./Middelwares/authMiddelware.js";
+
+
 console.log("JWT_SECRET from env:", process.env.JWT_SECRET_KEY);
 connectDB();
 
-// Initialize Express app
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-// Middleware to parse JSON and URL-encoded data
 app.use(express.urlencoded({ extended: true }));
 
 mountRoutes(app);
-// app.use("/api/v1/admin", adminRoutes);
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Global Error Handling Midleware for express
-app.use("/api/v1/company", companyRoutes);
 app.use(globalError);
 
-
-// Start the server
 const port = process.env.PORT || 5000;
 
-// Log the port number to confirm it's correct
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-// export default app;
+export default app;

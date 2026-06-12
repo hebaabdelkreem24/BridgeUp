@@ -1,43 +1,23 @@
 import express from "express";
-
-import { allowOnly } from "../Services/authService.js";
-import * as adminCompanyController  from "../Controllers/adminCompanyController.js";
-// import * as adminController from "../Controllers/AdminController.js";
+import {protect, allowOnly} from "../Services/authService.js";
 import {
-  getStats,
-  getAllGraduates,
-  getCompaniesDashboardController,
-  getAllGraduatesWithFilters,
-} from "../Controllers/AdminController.js";
-import { protect, restrictTo } from "../Middelwares/authMiddelware.js";
+    getAllCompanies,
+    getCompanyprofile,
+    approveCompany,
+    rejectCompany,
+    toggleStarCompany,
+    getStarredCompanies
+}from "../Controllers/adminCompanyController.js";
 
-const adminRouter = express.Router();
-// Companies
-adminRouter.get("/companies",adminCompanyController.getAllCompanies);
-adminRouter.get("/companies/:id",adminCompanyController.getCompanyprofile);
-adminRouter.patch("/companies/:id/approve", adminCompanyController.approveCompany);
-adminRouter.patch("/companies/:id/reject", adminCompanyController.rejectCompany);
-adminRouter.patch("/companies/:id/star", adminCompanyController.toggleStarCompany);
-adminRouter.get("/companies/starred", adminCompanyController.getStarredCompanies);
+const router = express.Router();
 
-// Get platform statistics (Admin only)
-adminRouter.get("/stats", protect, allowOnly("admin"), getStats);
+router.use(protect, allowOnly('admin'));
 
-// Get all graduates with scores + pagination (Admin only)
-adminRouter.get("/graduates", protect, allowOnly("admin"), getAllGraduates);
-// Get companies dashboard data (Admin only)
-adminRouter.get(
-  "/companies-dashboard",
-  protect,
-  allowOnly("admin"),
-  getCompaniesDashboardController,
-);
-// Get all graduates with filters + pagination (Admin only)
-adminRouter.get(
-  "/all-graduates",
-  protect,
-  allowOnly("admin"),
-  getAllGraduatesWithFilters,
-);
+router.get("/companies",getAllCompanies);
+router.get("/companies/starred", getStarredCompanies);
+router.get("/companies/:id",getCompanyprofile);
+router.patch("/companies/:id/approve", approveCompany);
+router.patch("/companies/:id/reject", rejectCompany);
+router.patch("/companies/:id/toggle-star", toggleStarCompany);
 
-export default adminRouter;
+export default router;

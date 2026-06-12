@@ -24,17 +24,23 @@ export const isEmailTaken = async (email) => {
 // Middleware to protect routes and authenticate users
 export const protect = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers.authorization;
+
+  console.log("=== AUTH DEBUG ===");
+  console.log("Auth Header:", authHeader);
+  console.log("JWT_SECRET from env:", process.env.JWT_SECRET_KEY);
+
   if (!authHeader || !authHeader.startsWith("Bearer")) {
     return next(new ApiError("Not authorized, no token", 401));
   }
-  const token = authHeader.split(" ")[1];
+  // const token = authHeader.split(" ")[1];
+const token = authHeader.replace("Bearer", "").trim();
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
   const [graduate, company, admin] = await Promise.all([
-    Graduate.findOne({ _id: decoded.userId }).select("+password"),
-    Company.findOne({ _id: decoded.userId }).select("+password"),
-    Admin.findOne({ _id: decoded.userId }).select("+password"),
+    Graduate.findById(decoded.userId) ,
+    Company.findById(decoded.userId),
+    Admin.findById(decoded.userId)
   ]);
 
   const user = graduate || company || admin;
@@ -49,14 +55,19 @@ export const protect = asyncHandler(async (req, res, next) => {
 // Middleware to allow access only to specific roles
 export const allowOnly = (...roles) => {
   return (req, res, next) => {
+
+    //   console.log("=== allowOnly DEBUG ===");
+    // console.log("req.user:", req.user);
+    // console.log("req.user.role:", req.user?.role);
+    // console.log("roles allowed:", roles);
+    // console.log("includes:", roles.includes(req.user?.role));
+    // // === END DEBUG ===
+
     const userRole = req.user.role?.toLowerCase();
-    if (!roles.includes(req.user.role)) {
-      return next(
-        new ApiError(
-          "Forbidden: You don't have permission to access this resource",
-          403,
-        ),
-      );
+    const normalizedRoles = roles.map(r => r.toLowerCase());
+    
+    if (!normalizedRoles.includes(userRole)) {
+      return next(new ApiError("Forbidden: You don't have permission...", 403));
     }
     next();
   };
@@ -64,7 +75,7 @@ export const allowOnly = (...roles) => {
 
 // Middleware to check if a company is approved by the admin
 export const isApprovedCompany = asyncHandler(async (req, res, next) => {
-  if (req.user.role === "Company" && !req.user.isApproved) {
+  if (req.user.role === "company" && !req.user.isApproved) {  // ← small c
     return next(
       new ApiError("Your account is pending approval by the admin", 403),
     );
@@ -85,7 +96,7 @@ export const graduateSignupService = async (body, file) => {
     university,
     graduationYear,
     track,
-    role,
+    profilePicture,
     portfolioLink,
     linkedInProfile,
     gitHubProfile,
@@ -111,7 +122,7 @@ export const graduateSignupService = async (body, file) => {
     university,
     graduationYear,
     track,
-    role: "graduate",
+    profilePicture: profilePicture || null,
     cv: cvPath,
     portfolioLink: portfolioLink || null,
     linkedInProfile: linkedInProfile || null,
@@ -122,7 +133,7 @@ export const graduateSignupService = async (body, file) => {
   });
   console.log("Assessment Created:", assessment);
 
-  const token = generateToken(graduate._id, "graduate");
+  const token = generateToken(graduate );  // ✅ small g
 
   return {
     token,
@@ -131,12 +142,9 @@ export const graduateSignupService = async (body, file) => {
       fullName: graduate.fullName,
       email: graduate.email,
       phone: graduate.phone,
-      password: graduate.password,
-      confirmPassword: graduate.confirmPassword,
       age: graduate.age,
       gender: graduate.gender,
       track: graduate.track,
-      role: graduate.role,
       university: graduate.university,
     },
     assessment,
@@ -171,6 +179,7 @@ export const companySignupService = async (body, files) => {
   }
   const commercialRegisterPath = `/uploads/${files.commercialRegister[0].filename}`;
   const taxCardPath = `/uploads/${files.taxCard[0].filename}`;
+
   const company = await Company.create({
     companyName,
     email,
@@ -183,15 +192,15 @@ export const companySignupService = async (body, files) => {
     taxCard: taxCardPath,
     isApproved: false,
   });
-  const token = generateToken(company._id, "company");
+
+  const token = generateToken(company);  // ← NEW + small c
 
   return {
-    token,
+    token,  // ← NEW
     company: {
       id: company._id,
       companyName: company.companyName,
       email: company.email,
-      password,
       phone: company.phone,
       description: company.description,
       industry: company.industry,
@@ -204,6 +213,9 @@ export const companySignupService = async (body, files) => {
 
 // Service function for login
 export const loginService = async (email, password) => {
+  try{
+      console.log("🔐 loginService called with email:", email);
+
   const [graduate, company, admin] = await Promise.all([
     Graduate.findOne({ email }).select("+password"),
     Company.findOne({ email }).select("+password"),
@@ -217,15 +229,15 @@ export const loginService = async (email, password) => {
   if (!isMatch) throw new ApiError("Invalid email or password", 401);
 
   let role;
-  if (graduate) role = "graduate";
-  else if (company) role = "company";
-  else if (admin) role = "admin";
+  if (graduate) role = "graduate";      // ← small g
+  else if (company) role = "company";   // ← small c
+  else if (admin) role = "admin";       // ← small a
 
-  if (role === "company" && !user.isApproved) {
+  if (role === "company" && !user.isApproved) {  // ← small c
     throw new ApiError("Your account is pending admin approval.", 403);
   }
 
-  const token = generateToken({ _id: user._id, role });
+  const token = generateToken(user);
   return {
     token,
     user: {
@@ -236,7 +248,19 @@ export const loginService = async (email, password) => {
       role,
     },
   };
+}catch(error){
+    if (error instanceof ApiError && error.isOperational) {
+    throw error;
+  }
+
+  console.error("Error in loginService:", error);
+  throw new ApiError("An error occurred during login. Please try again later.", 500);
+} 
 };
+
+
+
+
 // Service function for sending password reset email
 export const forgetPasswordService = async (email) => {
   const [graduate, company] = await Promise.all([
@@ -247,7 +271,7 @@ export const forgetPasswordService = async (email) => {
   const user = graduate || company;
   if (!user) throw new ApiError("User not found", 404);
 
-  const role = graduate ? "Graduate" : "Company";
+  const role = graduate ? "graduate" : "company";  // ← small
 
   const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
   const hashedResetCode = crypto
@@ -335,7 +359,6 @@ export const createAdmin = asyncHandler(async (body) => {
   return admin;
 });
 
-// Function to login admin
 export const loginAdmin = asyncHandler(async (body) => {
   const { email, password } = body;
   const admin = await Admin.findOne({ email });

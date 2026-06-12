@@ -28,7 +28,7 @@ const offerSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["pending", "accepted", "rejected"],
+      enum: ["pending", "accepted", "declined"],
       default: "pending",
     },
   },
@@ -38,6 +38,6 @@ const offerSchema = new mongoose.Schema(
 // Prevent a company from sending duplicate offers to the same graduate
 offerSchema.index({ company: 1, graduate: 1 }, { unique: true });
 
+// AFTER (بيتحقق لو الموديل موجود قبل ما يعمله):
 const Offer = mongoose.models.Offer || mongoose.model("Offer", offerSchema);
-
 export default Offer;

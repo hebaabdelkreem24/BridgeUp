@@ -8,7 +8,6 @@ export const protect = async (req, res, next) => {
   try {
     let token;
 
-    // 1) Check header
     if (req.headers.authorization?.startsWith("Bearer")) {
       token = req.headers.authorization.split(" ")[1];
     }
@@ -17,11 +16,8 @@ export const protect = async (req, res, next) => {
       return next(new ApiError("Not logged in. Please login first", 401));
     }
 
-    // 2) Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    console.log("Decoded token:", decoded); // <-- ضيف ده
 
-    // 3) Find user by id & role
     let user;
     if (decoded.role === "graduate") {
       user = await Graduate.findById(decoded.userId);
@@ -30,13 +26,11 @@ export const protect = async (req, res, next) => {
     } else if (decoded.role === "admin") {
       user = await Admin.findById(decoded.userId);
     }
-    console.log("👤 Found user:", !!user, "Role:", decoded.role);
 
     if (!user) {
       return next(new ApiError("User no longer exists", 401));
     }
 
-    // 4) Attach user to request
     req.user = user;
     next();
   } catch (err) {
@@ -44,10 +38,8 @@ export const protect = async (req, res, next) => {
   }
 };
 
-// Role restriction
 export const restrictTo = (...roles) => {
   return (req, res, next) => {
-  const userRole = req.user.role?.toLowerCase();
     if (!roles.includes(req.user.role)) {
       return next(new ApiError("No permission", 403));
     }

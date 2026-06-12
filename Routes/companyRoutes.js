@@ -1,23 +1,45 @@
 import express from "express";
-import { companySignup } from "../Controllers/authController.js";
-import { uploadCompanyFiles } from "../Middelwares/uploadMiddelware.js";
-import{protect , restrictTo} from "../Middelwares/authMiddelware.js";
-import {getCompanyProfile,
+import { protect, allowOnly } from "../Services/authService.js";
+import {
+  getCompanyProfile,
   updateCompanyProfile,
   getAllGraduates,
-  addToShortlist,     
-  removeFromShortlist, 
-  getShortlisted} from "../Controllers/companyController.js";
-const router = express.Router();
-router.use(protect, restrictTo("company"));
+  addToShortlist,
+  removeFromShortlist,
+  getShortlisted,
+} from "../Controllers/companyController.js";
+import {
+  sendOffer,
+  getMySentOffers,
+  deleteOffer,
+  getOfferStats,  // ← جديد
+} from "../Controllers/offerJobController.js";
+import {
+  getCompanyNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+} from "../Controllers/notificationController.js";
 
+const router = express.Router();
+
+router.use(protect, allowOnly("company"));
+// Company profile routes
 router.get("/profile", getCompanyProfile);
 router.put("/profile", updateCompanyProfile);
+// Graduate routes
 router.get("/graduates", getAllGraduates);
+// Shortlist routes
 router.post("/shortlist/:graduateId", addToShortlist);
 router.delete("/shortlist/:graduateId", removeFromShortlist);
 router.get("/shortlisted", getShortlisted);
-
-// router.post("/signup",uploadCompanyFiles,companySignUpValidator,companySignup,);
+// Notification
+router.get("/notifications", getCompanyNotifications);
+router.patch("/notifications/read-all", markAllNotificationsAsRead);
+router.patch("/notifications/:id/read", markNotificationAsRead);
+// Offer routes
+router.post("/offers", sendOffer);           // POST Contact offer
+router.get("/offers/sent", getMySentOffers);  // GET sent offer
+router.get("/offers/stats", getOfferStats);   // GET comp-Offer Stats
+router.delete("/offers/:id", deleteOffer);  
 
 export default router;

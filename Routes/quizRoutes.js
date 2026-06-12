@@ -1,10 +1,9 @@
 import express from "express";
 import {
-    createQuiz,
-    getAllQuiz,
-  getQuizById
+  createQuiz,
+  getAllQuiz,
+  getQuizById,
 } from "../Controllers/quizController.js";
-
 
 const quizRouter = express.Router();
 

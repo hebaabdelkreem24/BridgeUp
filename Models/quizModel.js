@@ -3,12 +3,21 @@ import mongoose from "mongoose";
 const quizSchema = new mongoose.Schema({
   title: {
     type: String,
-    enum: ["IQ", "English", "Frontend","Backend"],
+    enum: ["IQ", "English", "Technical"],
     required: true,
   },
+
+  track: {
+    type: String,
+    enum: ["Frontend", "Backend"],
+  },
+
   description: String,
   duration: String,
-  numberOfTime: Number,
+  numberOfQuestions: {
+    type: Number,
+    required: true,
+  },
 });
 
 const Quiz = mongoose.model("Quiz", quizSchema);

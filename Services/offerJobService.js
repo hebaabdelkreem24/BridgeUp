@@ -1,29 +1,25 @@
-import Offer from "../models/offerJobModel.js";
-import ApiError from "../utils/ApiError.js";
-import Offer from "../Models/offerJobModel.js";  // ← هنا
+import Offer from "../Models/offerJobModel.js";
+import ApiError from "../utils/apiError.js";
 
 // ─────────────────────────────────────────────
 // COMPANY SERVICES
 // ─────────────────────────────────────────────
 
 export const sendOfferService = async (companyId, { graduate, position, message }) => {
-  const existing = await Offer.findOne({ company: companyId, graduate, position });
+  const existing = await Offer.findOne({ company: companyId, graduate });
   if (existing) {
-    throw new ApiError("You already sent an offer to this graduate for this position", 400);
+    throw new ApiError("You already sent an offer to this graduate", 400);
   }
 
   const offer = await Offer.create({
     company: companyId,
     graduate,
     position,
-    jobTitle: jobTitle || position,
     message,
   });
 
   return offer;
 };
-
-
 
 export const getMySentOffersService = async (companyId) => {
   const offers = await Offer.find({ company: companyId })
@@ -46,19 +42,6 @@ export const deleteOfferService = async (offerId, companyId) => {
 
   await offer.deleteOne();
 };
-
-
-//--- Get company offer statistics
-export const getCompanyOfferStatsService = async(companyId) => {
-  const [totalContacted, acceptedCount] = await Promise.all([
-    Offer.countDocuments({company:companyId}),
-    Offer.countDocuments({company:companyId, status:"accepted"}),
-  ])
-  return {
-    totalContacted,
-    acceptedCount,
-  }
-}
 
 // ─────────────────────────────────────────────
 // GRADUATE SERVICES
