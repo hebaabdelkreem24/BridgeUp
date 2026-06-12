@@ -1,5 +1,5 @@
 import express from "express";
-import {protect, restrictTo} from "../Middelwares/authMiddelware.js";
+import {protect, allowOnly} from "../Services/authService.js";
 import {
     getAllCompanies,
     getCompanyprofile,
@@ -11,7 +11,7 @@ import {
 
 const router = express.Router();
 
-router.use(protect, restrictTo('Admin'));
+router.use(protect, allowOnly('admin'));
 
 router.get("/companies",getAllCompanies);
 router.get("/companies/starred", getStarredCompanies);

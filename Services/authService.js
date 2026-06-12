@@ -24,17 +24,23 @@ export const isEmailTaken = async (email) => {
 // Middleware to protect routes and authenticate users
 export const protect = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers.authorization;
+
+  console.log("=== AUTH DEBUG ===");
+  console.log("Auth Header:", authHeader);
+  console.log("JWT_SECRET from env:", process.env.JWT_SECRET_KEY);
+
   if (!authHeader || !authHeader.startsWith("Bearer")) {
     return next(new ApiError("Not authorized, no token", 401));
   }
-  const token = authHeader.split(" ")[1];
+  // const token = authHeader.split(" ")[1];
+const token = authHeader.replace("Bearer", "").trim();
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
   const [graduate, company, admin] = await Promise.all([
-    Graduate.findOne({ _id: decoded.userId }).select("+password"),
-    Company.findOne({ _id: decoded.userId }).select("+password"),
-    Admin.findOne({ _id: decoded.userId }).select("+password"),
+    Graduate.findById(decoded.userId) ,
+    Company.findById(decoded.userId),
+    Admin.findById(decoded.userId)
   ]);
 
   const user = graduate || company || admin;
@@ -49,13 +55,19 @@ export const protect = asyncHandler(async (req, res, next) => {
 // Middleware to allow access only to specific roles
 export const allowOnly = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return next(
-        new ApiError(
-          "Forbidden: You don't have permission to access this resource",
-          403,
-        ),
-      );
+
+    //   console.log("=== allowOnly DEBUG ===");
+    // console.log("req.user:", req.user);
+    // console.log("req.user.role:", req.user?.role);
+    // console.log("roles allowed:", roles);
+    // console.log("includes:", roles.includes(req.user?.role));
+    // // === END DEBUG ===
+
+    const userRole = req.user.role?.toLowerCase();
+    const normalizedRoles = roles.map(r => r.toLowerCase());
+    
+    if (!normalizedRoles.includes(userRole)) {
+      return next(new ApiError("Forbidden: You don't have permission...", 403));
     }
     next();
   };
@@ -121,7 +133,7 @@ export const graduateSignupService = async (body, file) => {
   });
   console.log("Assessment Created:", assessment);
 
-  const token = generateToken({ _id: graduate._id, role: "graduate" });  // ✅ small g
+  const token = generateToken(graduate );  // ✅ small g
 
   return {
     token,
@@ -181,7 +193,7 @@ export const companySignupService = async (body, files) => {
     isApproved: false,
   });
 
-  const token = generateToken({ _id: company._id, role: "company" });  // ← NEW + small c
+  const token = generateToken(company);  // ← NEW + small c
 
   return {
     token,  // ← NEW
@@ -225,7 +237,7 @@ export const loginService = async (email, password) => {
     throw new ApiError("Your account is pending admin approval.", 403);
   }
 
-  const token = generateToken({ _id: user._id, role });
+  const token = generateToken(user);
   return {
     token,
     user: {

@@ -48,6 +48,6 @@ authRouter.post("/verify-reset-code", verifyResetCodeValidator, verifyResetCode)
 authRouter.post("/reset-password", resetPasswordValidator, resetPassword);
 
 authRouter.post("/", createAdminController);
-authRouter.post("/AdminLogin", protect, allowOnly("admin"), loginAdminController);
+authRouter.post("/AdminLogin", loginAdminController);
 
 export default authRouter;

@@ -1,7 +1,6 @@
 import Offer from "../Models/offerJobModel.js";
 import ApiError from "../utils/apiError.js";
 
-
 // ─────────────────────────────────────────────
 // COMPANY SERVICES
 // ─────────────────────────────────────────────
