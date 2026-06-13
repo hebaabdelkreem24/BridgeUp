@@ -1,0 +1,6 @@
+question,grade,answer1,answer1_correct,answer2,answer2_correct,answer3,answer3_correct,answer4,answer4_correct
+What is Node.js?,10,Frontend framework,false,JavaScript runtime,true,Database,false,Operating system,false
+Which database is NoSQL?,10,MySQL,false,MongoDB,true,PostgreSQL,false,Oracle,false
+What is Express.js?,10,Backend framework for Node.js,true,CSS framework,false,Database,false,UI library,false
+What is REST API?,10,Protocol for databases,false,Architecture style for APIs,true,Programming language,false,Operating system,false
+Which method is used to get data?,10,POST,false,GET,true,PUT,false,DELETE,false

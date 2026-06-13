@@ -1,0 +1,6 @@
+question,grade,answer1,answer1_correct,answer2,answer2_correct,answer3,answer3_correct,answer4,answer4_correct
+What is React?,10,Library for UI,false,JavaScript Library for building UI,true,Database,false,Operating System,false
+What is CSS used for?,10,Styling web pages,true,Server logic,false,Database management,false,Network security,false
+Which language runs in the browser?,10,Python,false,Java,true,C++,false,Go,false
+What does HTML stand for?,10,HyperText Markup Language,true,HighText Machine Language,false,Hyper Transfer Markup Language,false,Home Tool Markup Language,false
+What is JSX?,10,JavaScript XML,true,Java Syntax Extension,false,JSON format,false,Java library,false

@@ -16,7 +16,7 @@ import reportRouter from "./reportRoutes.js";
 
 export const mountRoutes = (app) => {
   app.use("/api/v1/auth", authRouter);
-  app.use("/api/v1", contactUsRouter);
+  app.use("/api/v1/contact-us", contactUsRouter);
   app.use("/api/v1/admins", adminRouter);
   app.use("/api/v1/assessments", assessmentRouter);
   app.use("/api/v1/graduates", graduateRouter);

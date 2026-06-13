@@ -1,0 +1,6 @@
+question,grade,answer1,answer1_correct,answer2,answer2_correct,answer3,answer3_correct,answer4,answer4_correct
+What comes next: 2 4 6 8 ?,10,10,true,12,false,14,false,16,false
+If all cats are animals and Tom is a cat then Tom is a ?,10,Animal,true,Bird,false,Fish,false,Dog,false
+Which number is the odd one out ?,10,7,true,2,false,4,false,8,false
+What comes next: A C E G ?,10,I,true,H,false,J,false,K,false
+If 5 plus 3 equals 8 then 8 plus 4 equals ?,10,12,true,10,false,14,false,16,false

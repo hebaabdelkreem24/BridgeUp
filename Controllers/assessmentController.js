@@ -5,6 +5,25 @@ import {
   getAssessmentService,
 } from "../Services/assessmentService.js";
 
+import {getQuestionsForStudentService} from "../Services/questionService.js"
+
+
+export const startExam = async (req, res) => {
+    try {
+        const { quizId } = req.query;
+        
+        if (!quizId) {
+            return res.status(400).json({ message: "quizId is required" });
+        }
+
+        const questions = await getQuestionsForStudentService(quizId, req.user._id);
+        
+        res.json({ questions });
+    } catch (error) {
+        res.status(403).json({ message: error.message });
+    }
+};
+
 // @desc    Update assessment
 // @route   PUT /api/assessments/:graduateId
 // @access  Private (Admin)

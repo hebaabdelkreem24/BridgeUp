@@ -33,29 +33,33 @@ export const protect = asyncHandler(async (req, res, next) => {
     return next(new ApiError("Not authorized, no token", 401));
   }
   // const token = authHeader.split(" ")[1];
-const token = authHeader.replace("Bearer ", "").trim();
+  const token = authHeader.replace("Bearer ", "").trim();
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
   const [graduate, company, admin] = await Promise.all([
-    Graduate.findById(decoded.userId) ,
+    Graduate.findById(decoded.userId),
     Company.findById(decoded.userId),
-    Admin.findById(decoded.userId)
+    Admin.findById(decoded.userId),
   ]);
 
   const user = graduate || company || admin;
-  if (!user) {
+if (!user) {
     return next(new ApiError("Not authorized, user not found", 401));
-  }
+}
 
-  req.user = user;
-  next();
+console.log("=== USER ROLE DEBUG ===");
+console.log("user.role:", user.role);   
+console.log("decoded.role:", decoded.role);  
+
+req.user = user;
+next();
+
 });
 
 // Middleware to allow access only to specific roles
 export const allowOnly = (...roles) => {
   return (req, res, next) => {
-
     //   console.log("=== allowOnly DEBUG ===");
     // console.log("req.user:", req.user);
     // console.log("req.user.role:", req.user?.role);
@@ -64,8 +68,8 @@ export const allowOnly = (...roles) => {
     // // === END DEBUG ===
 
     const userRole = req.user.role?.toLowerCase();
-    const normalizedRoles = roles.map(r => r.toLowerCase());
-    
+    const normalizedRoles = roles.map((r) => r.toLowerCase());
+
     if (!normalizedRoles.includes(userRole)) {
       return next(new ApiError("Forbidden: You don't have permission...", 403));
     }
@@ -75,7 +79,8 @@ export const allowOnly = (...roles) => {
 
 // Middleware to check if a company is approved by the admin
 export const isApprovedCompany = asyncHandler(async (req, res, next) => {
-  if (req.user.role === "company" && !req.user.isApproved) {  // ← small c
+  if (req.user.role === "company" && !req.user.isApproved) {
+    // ← small c
     return next(
       new ApiError("Your account is pending approval by the admin", 403),
     );
@@ -132,7 +137,7 @@ export const graduateSignupService = async (body, file) => {
     graduate: graduate._id,
   });
 
-  const token = generateToken(graduate );  // ✅ small g
+  const token = generateToken(graduate); // ✅ small g
 
   return {
     token,
@@ -192,10 +197,10 @@ export const companySignupService = async (body, files) => {
     isApproved: false,
   });
 
-  const token = generateToken(company);  // ← NEW + small c
+  const token = generateToken(company); // ← NEW + small c
 
   return {
-    token,  // ← NEW
+    token, // ← NEW
     company: {
       id: company._id,
       companyName: company.companyName,
@@ -212,53 +217,54 @@ export const companySignupService = async (body, files) => {
 
 // Service function for login
 export const loginService = async (email, password) => {
-  try{
-      console.log("🔐 loginService called with email:", email);
+  try {
+    const [graduate, company, admin] = await Promise.all([
+      Graduate.findOne({ email }).select("+password"),
+      Company.findOne({ email }).select("+password"),
+      Admin.findOne({ email }).select("+password"),
+    ]);
 
-  const [graduate, company, admin] = await Promise.all([
-    Graduate.findOne({ email }).select("+password"),
-    Company.findOne({ email }).select("+password"),
-    Admin.findOne({ email }).select("+password"),
-  ]);
+    const user = graduate || company || admin;
+    if (!user) throw new ApiError("Invalid email or password", 401);
 
-  const user = graduate || company || admin;
-  if (!user) throw new ApiError("Invalid email or password", 401);
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) throw new ApiError("Invalid email or password", 401);
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw new ApiError("Invalid email or password", 401);
+    let role;
+    if (graduate)
+      role = "graduate"; // ← small g
+    else if (company)
+      role = "company"; // ← small c
+    else if (admin) role = "admin"; // ← small a
 
-  let role;
-  if (graduate) role = "graduate";      // ← small g
-  else if (company) role = "company";   // ← small c
-  else if (admin) role = "admin";       // ← small a
+    if (role === "company" && !user.isApproved) {
+      // ← small c
+      throw new ApiError("Your account is pending admin approval.", 403);
+    }
 
-  if (role === "company" && !user.isApproved) {  // ← small c
-    throw new ApiError("Your account is pending admin approval.", 403);
-  }
-
-  const token = generateToken(user);
-  return {
-    token,
-    user: {
-      id: user._id,
-      name: user.fullName || user.companyName,
-      email: user.email,
-      phone: user.phone,
-      role,
-    },
-  };
-}catch(error){
+    const token = generateToken({ ...user.toObject(), role });
+    return {
+      token,
+      user: {
+        id: user._id,
+        name: user.fullName || user.companyName,
+        email: user.email,
+        phone: user.phone,
+        role,
+      },
+    };
+  } catch (error) {
     if (error instanceof ApiError && error.isOperational) {
-    throw error;
+      throw error;
+    }
+
+    console.error("Error in loginService:", error);
+    throw new ApiError(
+      "An error occurred during login. Please try again later.",
+      500,
+    );
   }
-
-  console.error("Error in loginService:", error);
-  throw new ApiError("An error occurred during login. Please try again later.", 500);
-} 
 };
-
-
-
 
 // Service function for sending password reset email
 export const forgetPasswordService = async (email) => {
@@ -270,7 +276,7 @@ export const forgetPasswordService = async (email) => {
   const user = graduate || company;
   if (!user) throw new ApiError("User not found", 404);
 
-  const role = graduate ? "graduate" : "company";  // ← small
+  const role = graduate ? "graduate" : "company"; // ← small
 
   const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
   const hashedResetCode = crypto
@@ -354,7 +360,8 @@ export const resetPasswordService = async (email, newPassword) => {
 export const createAdmin = asyncHandler(async (body) => {
   const { name, email, password } = body;
 
-const admin = await Admin.create({ fullName: name, email, password });  return admin;
+  const admin = await Admin.create({ fullName: name, email, password });
+  return admin;
 });
 
 export const loginAdmin = asyncHandler(async (body) => {
