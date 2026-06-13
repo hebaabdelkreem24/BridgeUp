@@ -3,6 +3,7 @@ import ApiError from "../utils/apiError.js";
 import {
   updateAssessmentService,
   getAssessmentService,
+  submitExamService
 } from "../Services/assessmentService.js";
 
 import {getQuestionsForStudentService} from "../Services/questionService.js"
@@ -22,6 +23,30 @@ export const startExam = async (req, res) => {
     } catch (error) {
         res.status(403).json({ message: error.message });
     }
+};
+
+export const submitExam = async (req, res) => {
+  try {
+    const { quizId, answers } = req.body;
+
+    if (!quizId || !answers || !answers.length) {
+      return res.status(400).json({ message: "quizId and answers are required" });
+    }
+
+    const { totalScore, gradedAnswers } = await submitExamService(
+      quizId,
+      answers,
+      req.user._id,
+    );
+
+    res.json({
+      message: "تم تسليم الامتحان بنجاح ✅",
+      totalScore,
+      answers: gradedAnswers,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 // @desc    Update assessment
