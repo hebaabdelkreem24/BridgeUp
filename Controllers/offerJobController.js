@@ -30,7 +30,7 @@ export const sendOffer = asyncHandler(async (req, res) => {
     recipient: req.user._id,
     recipientRole: "company",
     sender: req.user._id,
-    senderRole: "company",
+    senderRole: "admin",
     type: "general",
     title: "✅ Offer Sent Successfully",
     message: `Your offer for "${req.body.position}" has been sent to the graduate.`,

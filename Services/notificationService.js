@@ -28,12 +28,23 @@ export const getMyNotifications = async (userId, role) => {
 // تحديد كـ مقروء
 export const markAsRead = async (notificationId, userId) => {
   const notification = await Notification.findOneAndUpdate(
-    { _id: notificationId, recipient: userId },
+    { 
+      _id: notificationId, 
+      recipient: userId.toString() 
+    },
     { isRead: true },
     { new: true }
   );
-
-  if (!notification) throw new ApiError("Notification not found", 404);
+  
+  if (!notification) {
+    // Try without recipient check (for debugging)
+    const notifExists = await Notification.findById(notificationId);
+    if (!notifExists) throw new ApiError("Notification not found", 404);
+    
+    // If exists but recipient mismatch
+    throw new ApiError("You are not authorized to mark this notification as read", 403);
+  }
+  
   return notification;
 };
 
