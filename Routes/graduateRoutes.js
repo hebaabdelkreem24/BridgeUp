@@ -13,7 +13,7 @@ const graduateRouter = express.Router();
 graduateRouter.get(
   "/assessments/me",
   protect,
-  allowOnly("graduate"),
+  // allowOnly("graduate"),
   getAssessmentMe,
 );
 graduateRouter.get("/me", protect, allowOnly("graduate"), getMyProfile);

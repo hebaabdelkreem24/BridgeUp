@@ -16,7 +16,7 @@ const contactUsRouter = express.Router();
 
 contactUsRouter.post("/", contactUsValidator, contactUs);
 contactUsRouter
-  .route("/")
+  .route("/all")
   .get(protect, allowOnly("admin"), getAllContactUs)
   .delete(protect, allowOnly("admin"), deleteAllMessages);
 contactUsRouter.get("/today", protect, allowOnly("admin"), getTodayMessages);

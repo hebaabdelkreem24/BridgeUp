@@ -1,33 +1,52 @@
 import express from "express";
-import {protect, allowOnly} from "../Services/authService.js";
+
+import { protect, allowOnly } from "../Services/authService.js";
+import * as adminCompanyController from "../Controllers/adminCompanyController.js";
+import * as adminController from "../Controllers/AdminController.js";
 import {
-    getAllCompanies,
-    getCompanyprofile,
-    approveCompany,
-    rejectCompany,
-    toggleStarCompany,
-    getStarredCompanies,
-    banCompany,
-    deleteCompany,
-    contactCompany,
-    contactAllCompanies
-}from "../Controllers/adminCompanyController.js";
+  getStats,
+  getAllGraduates,
+  getAllGraduatesWithFilters,
+  getCompaniesDashboardController,
+} from "../Controllers/AdminController.js";
+const adminRouter = express.Router();
+// Companies
+adminRouter.get("/companies", adminCompanyController.getAllCompanies);
+adminRouter.get("/companies/:id", adminCompanyController.getCompanyprofile);
+adminRouter.patch(
+  "/companies/:id/approve",
+  adminCompanyController.approveCompany,
+);
+adminRouter.patch(
+  "/companies/:id/reject",
+  adminCompanyController.rejectCompany,
+);
+adminRouter.patch(
+  "/companies/:id/star",
+  adminCompanyController.toggleStarCompany,
+);
+adminRouter.get(
+  "/companies/starred",
+  adminCompanyController.getStarredCompanies,
+);
 
-const router = express.Router();
+// Get platform statistics (Admin only)
+adminRouter.get("/stats", protect, allowOnly("admin"), getStats);
+// Get all graduates with scores + pagination (Admin only)
+adminRouter.get("/graduates", protect, allowOnly("admin"), getAllGraduates);
+// Get companies dashboard data (Admin only)
+adminRouter.get(
+  "/companies-dashboard",
+  protect,
+  allowOnly("admin"),
+  getCompaniesDashboardController,
+);
+// Get all graduates with filters + pagination (Admin only)
+adminRouter.get(
+  "/all-graduates",
+  protect,
+  allowOnly("admin"),
+  getAllGraduatesWithFilters,
+);
 
-router.use(protect, allowOnly('admin'));
-
-router.get("/companies", getAllCompanies);
-router.get("/companies/starred", getStarredCompanies);
-router.get("/companies/:id", getCompanyprofile);
-router.patch("/companies/:id/approve", approveCompany);
-router.patch("/companies/:id/reject", rejectCompany);
-router.patch("/companies/:id/ban", banCompany);
-router.patch("/companies/:id/toggle-star", toggleStarCompany);
-router.delete("/companies/:id", deleteCompany);
-
-// ─── NEW: Contact routes ──────────────────────────────
-router.post("/companies/:id/contact", contactCompany);
-router.post("/companies/contact-all", contactAllCompanies);
-
-export default router;
+export default adminRouter;
