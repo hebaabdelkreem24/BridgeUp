@@ -58,8 +58,7 @@ export const getRoadmapByIdService = async (id) => {
   const roadmap = await Roadmap.findById(id);
 
   if (!roadmap) {
-    throw new ApiError(404, "Roadmap not found");
-  }
+    throw new ApiError("Roadmap not found", 404);  }
 
   const phases = await Phase.find({ roadmap: roadmap._id }).sort("order");
 

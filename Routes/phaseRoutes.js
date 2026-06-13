@@ -8,8 +8,7 @@ import {
   deletePhase,
 } from "../Controllers/phaseController.js";
 
-import { allowOnly, protect } from "../services/authService.js";
-
+import { allowOnly, protect } from "../Services/authService.js";
 const phaseRouter = express.Router();
 
 phaseRouter.post("/:roadmapId", protect, allowOnly("admin"), addPhase);

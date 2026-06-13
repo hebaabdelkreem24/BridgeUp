@@ -41,8 +41,7 @@ export const markAsRead = async (notificationId, userId) => {
 export const markAllAsRead = async (userId, role) => {
   const normalizedRole = role?.toLowerCase();
   await Notification.updateMany(
-    { recipient: userId, recipientRole: role, isRead: false },
-    { isRead: true }
+    { recipient: userId, recipientRole: normalizedRole, isRead: false },    { isRead: true }
   );
   return true;
 };

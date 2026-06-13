@@ -33,7 +33,7 @@ export const protect = asyncHandler(async (req, res, next) => {
     return next(new ApiError("Not authorized, no token", 401));
   }
   // const token = authHeader.split(" ")[1];
-const token = authHeader.replace("Bearer", "").trim();
+const token = authHeader.replace("Bearer ", "").trim();
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
@@ -355,8 +355,7 @@ export const resetPasswordService = async (email, newPassword) => {
 export const createAdmin = asyncHandler(async (body) => {
   const { name, email, password } = body;
 
-  const admin = await Admin.create({ name, email, password });
-  return admin;
+const admin = await Admin.create({ fullName: name, email, password });  return admin;
 });
 
 export const loginAdmin = asyncHandler(async (body) => {
