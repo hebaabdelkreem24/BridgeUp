@@ -7,8 +7,7 @@ import {
   updateResource,
   deleteResource,
 } from "../Controllers/resourceController.js";
-import { protect, allowOnly } from "../services/authService.js";
-
+import { protect, allowOnly } from "../Services/authService.js";
 const resourceRouter = express.Router();
 
 resourceRouter.post("/:phaseId", protect, allowOnly("admin"), addResource);

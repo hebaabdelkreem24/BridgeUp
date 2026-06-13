@@ -2,7 +2,7 @@ import ApiError from "../utils/apiError.js";
 import Assessment from "../Models/assessmentModel.js";
 import Graduate from "../Models/graduateModel.js";
 import Roadmap from "../Models/roadmapModel.js";
-import Phase from "../Models/phaseModel.js";
+import Phase from "../Models/PhaseModel.js";
 import Resource from "../Models/resourceModel.js";
 
 // Get graduate profile

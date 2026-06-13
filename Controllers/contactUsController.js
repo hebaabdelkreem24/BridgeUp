@@ -8,6 +8,8 @@ import {
   deleteAllMessagesService,
   getMessagesStatsService,
 } from "../Services/contactUsService.js";
+import { createNotification } from "../Services/notificationService.js";
+
 
 // @desc    Submit Contact Us Form
 // @route   POST /api/v1/contactUs

@@ -13,7 +13,6 @@ const frontendTopics = [
   { title: "Performance Optimization", order: 6 },
 ];
 
-
 const backendTopics = [
   { title: "Node.js Basics", order: 1 },
   { title: "Express.js", order: 2 },
@@ -24,19 +23,19 @@ const backendTopics = [
 ];
 
 const seedRoadmap = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI);
-        await Roadmap.deleteMany();
-        await Roadmap.create([
-            { track: "Frontend", topics: frontendTopics },
-            { track: "Backend", topics: backendTopics },
-        ]);
-        console.log("Roadmap seeded successfully");
-    } catch (error) {
-        console.error("Error seeding roadmap:", error);
-    }finally {
-        process.exit();
-    }
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    await Roadmap.deleteMany();
+    await Roadmap.create([
+      { track: "Frontend", topics: frontendTopics },
+      { track: "Backend", topics: backendTopics },
+    ]);
+    console.log("Roadmap seeded successfully");
+  } catch (error) {
+    console.error("Error seeding roadmap:", error);
+  } finally {
+    process.exit();
+  }
 };
 
-seed();
+seedRoadmap();

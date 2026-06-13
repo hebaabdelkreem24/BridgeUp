@@ -7,8 +7,7 @@ import {
   updateRoadmap,
   deleteRoadmap,
 } from "../Controllers/roadMapController.js";
-import { protect, allowOnly } from "../services/authService.js";
-
+import { protect, allowOnly } from "../Services/authService.js";
 const roadMapRouter = express.Router();
 
 roadMapRouter.get("/", protect, getRoadmaps);

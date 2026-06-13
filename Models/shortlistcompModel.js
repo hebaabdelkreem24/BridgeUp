@@ -18,5 +18,5 @@ const shortlistcompSchema = new mongoose.Schema(
 
     shortlistcompSchema.index({company: 1, graduate: 1}, {unique: true});
 
-    const shortlistcomp = mongoose.model("shortlistcomp", shortlistcompSchema);
-    export default shortlistcomp;
+const shortlistcomp = mongoose.models.shortlistcomp || mongoose.model("shortlistcomp", shortlistcompSchema);
+export default shortlistcomp;

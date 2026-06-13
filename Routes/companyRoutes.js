@@ -1,7 +1,5 @@
 import express from "express";
-import { companySignup } from "../Controllers/authController.js";
-import { uploadCompanyFiles } from "../Middelwares/uploadMiddelware.js";
-import { protect, allowOnly } from "../Services/authService.js";
+import { protect, allowOnly, isApprovedCompany } from "../Services/authService.js";
 import {
   getCompanyProfile,
   updateCompanyProfile,
@@ -10,16 +8,31 @@ import {
   removeFromShortlist,
   getShortlisted,
 } from "../Controllers/companyController.js";
-const router = express.Router();
-router.use(protect, allowOnly("Company"));
+import {
+  getCompanyNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+} from "../Controllers/notificationController.js";
 
+const router = express.Router();
+
+router.use(protect, allowOnly("company"), isApprovedCompany);
+
+// Company profile routes
 router.get("/profile", getCompanyProfile);
 router.put("/profile", updateCompanyProfile);
+
+// Graduate routes
 router.get("/graduates", getAllGraduates);
+
+// Shortlist routes
 router.post("/shortlist/:graduateId", addToShortlist);
 router.delete("/shortlist/:graduateId", removeFromShortlist);
 router.get("/shortlisted", getShortlisted);
 
-// router.post("/signup",uploadCompanyFiles,companySignUpValidator,companySignup,);
+// Notification
+router.get("/notifications", getCompanyNotifications);
+router.patch("/notifications/read-all", markAllNotificationsAsRead);
+router.patch("/notifications/:id/read", markNotificationAsRead);
 
 export default router;

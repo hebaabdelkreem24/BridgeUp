@@ -50,6 +50,18 @@ const companySchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your tax card number"],
     },
+    website: {
+      type: String,
+      trim: true,
+    },
+    location: {
+      type: String,
+      trim: true,
+    },
+    companySize: {
+      type: String,
+      enum: ["Small (1-50)", "Mid (51-200)", "Mid (101-500)", "Large (501+)"],
+    },
     // Meta
     role: {
       type: String,

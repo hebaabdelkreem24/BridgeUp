@@ -57,4 +57,5 @@ const examAttemptSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("ExamAttempt", examAttemptSchema);
+const ExamAttempt = mongoose.models.ExamAttempt || mongoose.model("ExamAttempt", examAttemptSchema);
+export default ExamAttempt;
