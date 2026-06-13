@@ -1,6 +1,6 @@
-import Company from "../Models/companyModel";
+import Company from "../Models/companyModel.js";
 
-export const getAllCompanies = (async (req,res)=> {
+export const getAllCompanies = async (req,res)=> {
     const{ status , industry } = req.query;
 
     let filter ={};
@@ -27,7 +27,7 @@ res.status(200).json({
 });
 
 
-});
+};
 
 //view profile
 
@@ -72,6 +72,8 @@ export const toggleStarCompany = async(req,res,next)=>{
 //starred Companies 
 export const getStarredCompanies = async(req,res,next)=>{
     const starredCompanies = await Company.find({isStarred:true}).select("-password");
-    res.status(200).json({results: companies.Length, starredCompanies});
-
+    res.status(200).json({
+        results: starredCompanies.length,  // ← صح
+        starredCompanies
+    });
 }

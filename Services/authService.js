@@ -119,7 +119,6 @@ export const graduateSignupService = async (body, file) => {
   const assessment = await Assessment.create({
     graduate: graduate._id,
   });
-  console.log("Assessment Created:", assessment);
 
   const token = generateToken(graduate._id, "Graduate");
 
@@ -224,7 +223,7 @@ export const loginService = async (email, password) => {
     throw new ApiError("Your account is pending admin approval.", 403);
   }
 
-  const token = generateToken(user._id, role);
+  const token = generateToken({ _id: user._id, role });
   return {
     token,
     user: {

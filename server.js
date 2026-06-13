@@ -9,7 +9,6 @@ import { mountRoutes } from "./Routes/indexRoutes.js";
 
 dotenv.config({ path: ".env" });
 
-import { protect } from "./Middelwares/authMiddelware.js";
 console.log("JWT_SECRET from env:", process.env.JWT_SECRET_KEY);
 connectDB();
 
@@ -24,12 +23,14 @@ app.use(express.urlencoded({ extended: true }));
 
 mountRoutes(app);
 
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Global Error Handling Midleware for express
 app.use(globalError);
+
 
 // Start the server
 const port = process.env.PORT || 5000;
