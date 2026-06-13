@@ -22,5 +22,5 @@ const phaseSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const Phase = mongoose.model("Phase", phaseSchema);
+const Phase = mongoose.models.Phase || mongoose.model("Phase", phaseSchema);
 export default Phase;

@@ -8,7 +8,7 @@ export const getAllCompanies = async (req, res) => {
 
   let filter = {};
 
-  if (status == "approved") { filter.isApproved = true; }
+  if (status == "approved" || status == "all" || !status) { filter.isApproved = true; }
   if (status == "pending") { filter.isApproved = false; }
 
   if (industry) {
@@ -44,7 +44,6 @@ export const approveCompany = async (req, res, next) => {
   company.isApproved = true;
   await company.save();
 
-  // إرسال notification للشركة
   await createNotification({
     recipient: company._id,
     recipientRole: "company",
@@ -58,15 +57,11 @@ export const approveCompany = async (req, res, next) => {
   res.status(200).json({ message: "company approved successfully", company });
 };
 
-// ─── Reject Company + Send Notification ───────────────
+// ─── Reject Company + DELETE from DB ───────────────
 export const rejectCompany = async (req, res, next) => {
-  const company = await Company.findById(req.params.id).select("-password");
+  const company = await Company.findById(req.params.id);
   if (!company) return next(new ApiError("Company not Found", 404));
 
-  company.isApproved = false;
-  await company.save();
-
-  // إرسال notification للشركة (BEFORE sending response!)
   await createNotification({
     recipient: company._id,
     recipientRole: "company",
@@ -74,11 +69,32 @@ export const rejectCompany = async (req, res, next) => {
     senderRole: "admin",
     type: "account_rejected",
     title: "❌ Account Rejected",
-    message: req.body.reason || "Your company account has been rejected by the admin.",
+    message: req.body.reason || "Your company account has been rejected and deleted by the admin.",
   });
 
-  // بعت الـ response مرة واحدة بس في الآخر
-  res.status(200).json({ message: "company rejected successfully", company });
+  await Company.findByIdAndDelete(req.params.id);
+
+  res.status(200).json({ message: "company rejected and deleted successfully" });
+};
+
+// ─── Ban Company + DELETE from DB ───────────────────
+export const banCompany = async (req, res, next) => {
+  const company = await Company.findById(req.params.id);
+  if (!company) return next(new ApiError("Company not Found", 404));
+
+  await createNotification({
+    recipient: company._id,
+    recipientRole: "company",
+    sender: req.user._id,
+    senderRole: "admin",
+    type: "account_rejected",
+    title: "🚫 Account Banned",
+    message: req.body.reason || "Your company account has been banned and deleted by the admin.",
+  });
+
+  await Company.findByIdAndDelete(req.params.id);
+
+  res.status(200).json({ message: "company banned and deleted successfully" });
 };
 
 // ─── Toggle Star Company + Send Notification ──────────
@@ -89,7 +105,6 @@ export const toggleStarCompany = async (req, res, next) => {
   company.isStarred = !company.isStarred;
   await company.save();
 
-  // إرسال notification لو اتعمل star
   if (company.isStarred) {
     await createNotification({
       recipient: company._id,
@@ -114,5 +129,85 @@ export const getStarredCompanies = async (req, res) => {
   res.status(200).json({
     results: starredCompanies.length,
     starredCompanies,
+  });
+};
+
+// ─── Delete Company (Manual Delete) ───────────────────
+export const deleteCompany = async (req, res, next) => {
+  const company = await Company.findByIdAndDelete(req.params.id);
+  if (!company) return next(new ApiError("Company not Found", 404));
+
+  res.status(200).json({ message: "company deleted successfully" });
+};
+
+// ─── Contact Single Company (Send Notification) ─────
+export const contactCompany = async (req, res, next) => {
+  const { message, title } = req.body;
+
+  if (!message || message.trim() === "") {
+    return next(new ApiError("Message is required", 400));
+  }
+
+  const company = await Company.findById(req.params.id);
+  if (!company) return next(new ApiError("Company not Found", 404));
+
+  // Send notification to company dashboard
+  await createNotification({
+    recipient: company._id,
+    recipientRole: "company",
+    sender: req.user._id,
+    senderRole: "admin",
+    type: "general",
+    title: title || "📩 Message from Admin",
+    message: message,
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "Notification sent successfully to company",
+    data: {
+      company: company.companyName,
+      sentMessage: message,
+    },
+  });
+};
+
+// ─── Contact All Approved Companies (Send Notification) ─
+export const contactAllCompanies = async (req, res, next) => {
+  const { message, title } = req.body;
+
+  if (!message || message.trim() === "") {
+    return next(new ApiError("Message is required", 400));
+  }
+
+  // Get all approved companies
+  const companies = await Company.find({ isApproved: true }).select("_id companyName");
+
+  if (companies.length === 0) {
+    return next(new ApiError("No approved companies found", 404));
+  }
+
+  // Send notification to each company
+  const notifications = [];
+  for (const company of companies) {
+    const notification = await createNotification({
+      recipient: company._id,
+      recipientRole: "company",
+      sender: req.user._id,
+      senderRole: "admin",
+      type: "general",
+      title: title || "📩 Message from Admin",
+      message: message,
+    });
+    notifications.push(notification);
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: `Notification sent to ${companies.length} companies`,
+    data: {
+      totalCompanies: companies.length,
+      sentMessage: message,
+    },
   });
 };

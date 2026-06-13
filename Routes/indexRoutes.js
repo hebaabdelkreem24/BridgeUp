@@ -12,6 +12,7 @@ import questionRouter from "./questionRoutes.js";
 import quizRouter from "./quizRoutes.js";
 import resourceRouter from "./resourceRoutes.js";
 import roadMapRouter from "./roadMapRoutes.js";
+import reportRouter from "./reportRoutes.js";
 
 export const mountRoutes = (app) => {
   app.use("/api/v1/auth", authRouter);
@@ -28,4 +29,5 @@ export const mountRoutes = (app) => {
   app.use("/api/v1/quizzes", quizRouter);
   app.use("/api/v1/resources", resourceRouter);
   app.use("/api/v1/roadmaps", roadMapRouter);
+  app.use("/api/v1/admin/reports", reportRouter);
 };

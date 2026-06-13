@@ -80,6 +80,5 @@ graduateSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, 12);
 });
 
-const Graduate = mongoose.model("Graduate", graduateSchema);
-
+const Graduate = mongoose.models.Graduate || mongoose.model("Graduate", graduateSchema);
 export default Graduate;
