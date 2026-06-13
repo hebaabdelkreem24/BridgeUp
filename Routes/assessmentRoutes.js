@@ -6,6 +6,8 @@ import {
   getAssessment,
 } from "../Controllers/assessmentController.js";
 
+import {verifySEB} from "../Middelwares/sebVerifyMiddelware.js"
+
 const assessmentRouter = express.Router();
 
 // Update assessment (Admin only)
@@ -22,4 +24,10 @@ assessmentRouter.get(
   allowOnly("admin"),
   getAssessment,
 );
+assessmentRouter.get('/start', protect,allowOnly("graduate"),verifySEB, (req, res) => {
+    res.json({ message: 'امتحان شغال من SEB ✅' });
+});
+
+assessmentRouter.post('/submit', verifySEB, (req, res) => {
+});
 export default assessmentRouter;

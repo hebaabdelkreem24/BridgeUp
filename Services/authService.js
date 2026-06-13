@@ -119,7 +119,6 @@ export const graduateSignupService = async (body, file) => {
   const assessment = await Assessment.create({
     graduate: graduate._id,
   });
-  console.log("Assessment Created:", assessment);
 
   const token = generateToken(graduate._id, "Graduate");
 
