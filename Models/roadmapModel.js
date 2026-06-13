@@ -4,7 +4,6 @@ const roadmapSchema = new mongoose.Schema(
   {
     track: {
       type: String,
-      enum: ["Frontend", "Backend"],
       required: true,
       unique: true,
     },

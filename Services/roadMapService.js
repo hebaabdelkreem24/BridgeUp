@@ -1,6 +1,7 @@
 import Roadmap from "../Models/roadMapModel.js";
 import Phase from "../Models/phaseModel.js";
 import Resource from "../Models/resourceModel.js";
+import mongoose from "mongoose"
 import ApiError from "../utils/apiError.js";
 
 // Only admin can create roadmap. Phases and resources are created via their respective endpoints
@@ -107,23 +108,36 @@ export const updateRoadmapService = async (id, data) => {
 
 // When a roadmap is deleted, we need to delete all its phases and resources as well
 export const deleteRoadmapService = async (id) => {
-  const roadmap = await Roadmap.findById(id);
-
-  if (!roadmap) {
-    throw new ApiError(404, "Roadmap not found");
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(400, "Invalid roadmap id");
   }
 
-  const phases = await Phase.find({ roadmap: id });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  const phaseIds = phases.map((p) => p._id);
+  try {
+    const roadmap = await Roadmap.findById(id).session(session);
 
-  await Resource.deleteMany({
-    phase: { $in: phaseIds },
-  });
+    if (!roadmap) {
+      throw new ApiError(404, "Roadmap not found");
+    }
 
-  await Phase.deleteMany({ roadmap: id });
+    const phases = await Phase.find({ roadmap: id }).session(session);
+    const phaseIds = phases.map((p) => p._id);
 
-  await Roadmap.findByIdAndDelete(id);
+    await Resource.deleteMany({ phase: { $in: phaseIds } }).session(session);
 
-  return;
+    await Phase.deleteMany({ roadmap: id }).session(session);
+
+    await Roadmap.findByIdAndDelete(id).session(session);
+
+    await session.commitTransaction();
+
+  } catch (err) {
+    await session.abortTransaction();
+    throw err;
+
+  } finally {
+    session.endSession();
+  }
 };
