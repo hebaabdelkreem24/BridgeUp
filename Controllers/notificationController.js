@@ -40,14 +40,6 @@ export const getCompanyNotifications = asyncHandler(async (req, res) => {
 // @desc    Mark as read
 // @route   PATCH /api/v1/notifications/:id/read
 // @access  Private
-// export const markNotificationAsRead = asyncHandler(async (req, res) => {
-//   const notification = await markAsRead(req.params.id, req.user._id);
-
-//   res.status(200).json({
-//     status: "success",
-//     data: { notification },
-//   });
-// });
 export const markAsRead = async (notificationId, userId) => {
   const notification = await Notification.findOneAndUpdate(
     { 
