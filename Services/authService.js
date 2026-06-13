@@ -25,10 +25,6 @@ export const isEmailTaken = async (email) => {
 export const protect = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  console.log("=== AUTH DEBUG ===");
-  console.log("Auth Header:", authHeader);
-  console.log("JWT_SECRET from env:", process.env.JWT_SECRET_KEY);
-
   if (!authHeader || !authHeader.startsWith("Bearer")) {
     return next(new ApiError("Not authorized, no token", 401));
   }
@@ -48,9 +44,6 @@ if (!user) {
     return next(new ApiError("Not authorized, user not found", 401));
 }
 
-console.log("=== USER ROLE DEBUG ===");
-console.log("user.role:", user.role);   
-console.log("decoded.role:", decoded.role);  
 
 req.user = user;
 next();

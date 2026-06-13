@@ -3,7 +3,8 @@ import { protect, allowOnly } from "../Services/authService.js";
 import {
   updateAssessment,
   getAssessment,
-  startExam
+  startExam,
+  submitExam,
 } from "../Controllers/assessmentController.js";
 
 import { verifySEB } from "../Middelwares/sebVerifyMiddelware.js";
@@ -14,7 +15,7 @@ assessmentRouter.get(
   protect,
   allowOnly("graduate"),
   verifySEB,
-  startExam
+  startExam,
 );
 
 assessmentRouter.post(
@@ -22,7 +23,7 @@ assessmentRouter.post(
   protect,
   allowOnly("graduate"),
   verifySEB,
-  (req, res) => {},
+  submitExam,
 );
 
 assessmentRouter.put(
