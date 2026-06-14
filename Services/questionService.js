@@ -79,27 +79,37 @@ export const getMyExamsService = async (userTrack) => {
 };
 
 export const getQuestionsForStudentService = async (quizId, userId) => {
-  const user = await Graduate.findById(userId);
+   const user = await Graduate.findById(userId);
 
-  if (!user) throw new Error("User not found");
+   if (!user) throw new Error("User not found");
 
-  const quiz = await Quiz.findById(quizId);
+   const quiz = await Quiz.findById(quizId);
 
-  if (!quiz) throw new Error("Quiz not found");
+   if (!quiz) throw new Error("Quiz not found");
 
-  if (quiz.title === "Technical" && quiz.track !== user.track) {
-    throw new Error("Not allowed to access this quiz");
-  }
+   if (quiz.title === "Technical" && quiz.track !== user.track) {
+     throw new Error("Not allowed to access this quiz");
+   }
 
-  const questions = await Question.find({ quiz: quizId });
+   const questions = await Question.find({ quiz: quizId });
 
-  return questions.map((q) => ({
-    _id: q._id,
-    text: q.text,
-    grade: q.grade,
-    answers: q.answers.map((a) => ({
-      _id: a._id,
-      text: a.text,
-    })),
-  }));
+   return questions.map((q) => ({
+     _id: q._id,
+     text: q.text,
+     grade: q.grade,
+     answers: q.answers.map((a) => ({
+       _id: a._id,
+       text: a.text,
+     })),
+   }));
+ };
+
+export const deleteQuestionService = async (questionId) => {
+   const deletedQuestion = await Question.findByIdAndDelete(questionId);
+
+   if (!deletedQuestion) {
+     throw new Error("Question not found");
+   }
+
+   return deletedQuestion;
 };

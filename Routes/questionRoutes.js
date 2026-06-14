@@ -1,11 +1,12 @@
 import express from "express";
 import {
-  uploadQuestions,
-  getAllQuestionsForAdmin,
-  getGroupedQuestions,
-  getMyExams,
-  getQuestionsForGraduate,
-} from "../Controllers/questionController.js";
+   uploadQuestions,
+   getAllQuestionsForAdmin,
+   getGroupedQuestions,
+   getMyExams,
+   getQuestionsForGraduate,
+   deleteQuestion,
+ } from "../Controllers/questionController.js";
 
 import upload from "../Middelwares/uploadQuizFileMiddelware.js";
 import { protect, allowOnly } from "../Services/authService.js";
@@ -36,10 +37,17 @@ questionRouter.get(
 questionRouter.get("/my-exams", protect, allowOnly("graduate"), getMyExams);
 
 questionRouter.get(
-  "/questions-graduate/:quizId",
-  protect,
-  allowOnly("graduate"),
-  getQuestionsForGraduate,
-);
+   "/questions-graduate/:quizId",
+   protect,
+   allowOnly("graduate"),
+   getQuestionsForGraduate,
+ );
+
+questionRouter.delete(
+   "/:questionId",
+   protect,
+   allowOnly("admin"),
+   deleteQuestion,
+ );
 
 export default questionRouter;

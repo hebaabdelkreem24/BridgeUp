@@ -1,11 +1,12 @@
 import asyncHandler from "express-async-handler";
 import {
-  uploadQuestionsService,
-  getAllQuestionsForAdminService,
-  getGroupedQuestionsService,
-  getMyExamsService,
-  getQuestionsForStudentService,
-} from "../Services/questionService.js";
+   uploadQuestionsService,
+   getAllQuestionsForAdminService,
+   getGroupedQuestionsService,
+   getMyExamsService,
+   getQuestionsForStudentService,
+   deleteQuestionService,
+ } from "../Services/questionService.js";
 
 export const uploadQuestions = async (req, res) => {
   try {
@@ -63,14 +64,25 @@ export const getMyExams = asyncHandler(async (req, res) => {
 });
 
 export const getQuestionsForGraduate = asyncHandler(async (req, res) => {
-  const quizId = req.params.quizId;
+   const quizId = req.params.quizId;
 
-  const userId = req.user._id; 
+   const userId = req.user._id; 
 
-  const questions = await getQuestionsForStudentService(quizId, userId);
+   const questions = await getQuestionsForStudentService(quizId, userId);
 
-  res.status(200).json({
-    status: "success",
-    data: questions,
-  });
-});
+   res.status(200).json({
+     status: "success",
+     data: questions,
+   });
+ });
+
+export const deleteQuestion = asyncHandler(async (req, res) => {
+   const { questionId } = req.params;
+
+   await deleteQuestionService(questionId);
+
+   res.status(200).json({
+     status: "success",
+     message: "Question deleted successfully",
+   });
+ });
