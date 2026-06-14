@@ -8,45 +8,41 @@ import {
   getAllGraduates,
   getAllGraduatesWithFilters,
   getCompaniesDashboardController,
+
+  getStarredCompanies,
+  approveCompany,
+    rejectCompany,
+    toggleStarCompany,
+    banCompany,
+    deleteCompany,
+    contactCompany,
+    contactAllCompanies
 } from "../Controllers/AdminController.js";
-const adminRouter = express.Router();
-// Companies
-adminRouter.get("/companies", adminCompanyController.getAllCompanies);
-adminRouter.get("/companies/:id", adminCompanyController.getCompanyprofile);
-adminRouter.patch(
-  "/companies/:id/approve",
-  adminCompanyController.approveCompany,
-);
-adminRouter.patch(
-  "/companies/:id/reject",
-  adminCompanyController.rejectCompany,
-);
-adminRouter.patch(
-  "/companies/:id/star",
-  adminCompanyController.toggleStarCompany,
-);
-adminRouter.get(
-  "/companies/starred",
-  adminCompanyController.getStarredCompanies,
-);
+
+const router = express.Router();// Companies
+
+router.get("/companies", adminCompanyController.getAllCompanies);
+router.get("/companies/:id", adminCompanyController.getCompanyprofile);
+router.patch("/companies/:id/approve", adminCompanyController.approveCompany);
+router.patch("/companies/:id/reject", adminCompanyController.rejectCompany);
+router.patch("/companies/:id/star", adminCompanyController.toggleStarCompany);
+router.get("/companies/starred", adminCompanyController.getStarredCompanies);
+router.patch("/companies/:id/ban", banCompany);
+router.delete("/companies/:id", deleteCompany);
+
+
+// ─── NEW: Contact routes ──────────────────────────────
+router.post("/companies/:id/contact", contactCompany);
+router.post("/companies/contact-all", contactAllCompanies);
+
 
 // Get platform statistics (Admin only)
-adminRouter.get("/stats", protect, allowOnly("admin"), getStats);
+router.get("/stats", protect, allowOnly("admin"), getStats);
 // Get all graduates with scores + pagination (Admin only)
-adminRouter.get("/graduates", protect, allowOnly("admin"), getAllGraduates);
+router.get("/graduates", protect, allowOnly("admin"), getAllGraduates);
 // Get companies dashboard data (Admin only)
-adminRouter.get(
-  "/companies-dashboard",
-  protect,
-  allowOnly("admin"),
-  getCompaniesDashboardController,
-);
+router.get("/companies-dashboard", protect,allowOnly("admin"),getCompaniesDashboardController);
 // Get all graduates with filters + pagination (Admin only)
-adminRouter.get(
-  "/all-graduates",
-  protect,
-  allowOnly("admin"),
-  getAllGraduatesWithFilters,
-);
+router.get("/all-graduates",protect,allowOnly("admin"),getAllGraduatesWithFilters);
 
-export default adminRouter;
+export default router;
