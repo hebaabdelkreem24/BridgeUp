@@ -5,7 +5,7 @@ import {
    getGroupedQuestions,
    getMyExams,
    getQuestionsForGraduate,
-   deleteQuestion,
+   deleteAllQuestionsInQuiz,
  } from "../Controllers/questionController.js";
 
 import upload from "../Middelwares/uploadQuizFileMiddelware.js";
@@ -47,7 +47,7 @@ questionRouter.delete(
    "/:questionId",
    protect,
    allowOnly("admin"),
-   deleteQuestion,
+   deleteAllQuestionsInQuiz,
  );
 
 export default questionRouter;

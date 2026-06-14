@@ -5,7 +5,7 @@ import {
    getGroupedQuestionsService,
    getMyExamsService,
    getQuestionsForStudentService,
-   deleteQuestionService,
+   deleteAllQuestionsInQuizService,
  } from "../Services/questionService.js";
 
 export const uploadQuestions = async (req, res) => {
@@ -76,13 +76,15 @@ export const getQuestionsForGraduate = asyncHandler(async (req, res) => {
    });
  });
 
-export const deleteQuestion = asyncHandler(async (req, res) => {
-   const { questionId } = req.params;
+export const deleteAllQuestionsInQuiz = async (req, res) => {
+  try {
+    const { quizId } = req.params;
+    const deletedCount = await deleteAllQuestionsInQuizService(quizId);
 
-   await deleteQuestionService(questionId);
-
-   res.status(200).json({
-     status: "success",
-     message: "Question deleted successfully",
-   });
- });
+    res.json({
+      message: `تم حذف ${deletedCount} سؤال بنجاح ✅`,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
