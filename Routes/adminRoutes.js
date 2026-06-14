@@ -9,6 +9,8 @@ import {
   getAllGraduatesWithFilters,
   getCompaniesDashboardController,
 
+    getAllCompanies,
+    getCompanyprofile,
   getStarredCompanies,
   approveCompany,
     rejectCompany,
@@ -20,6 +22,7 @@ import {
 } from "../Controllers/AdminController.js";
 
 const router = express.Router();// Companies
+router.use(protect, allowOnly('admin'));
 
 router.get("/companies", adminCompanyController.getAllCompanies);
 router.get("/companies/:id", adminCompanyController.getCompanyprofile);
