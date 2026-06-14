@@ -1,5 +1,6 @@
 import express from "express";
 import { protect, allowOnly, isApprovedCompany } from "../Services/authService.js";
+import { companySignup } from "../Controllers/authController.js";
 import {
   getCompanyProfile,
   updateCompanyProfile,

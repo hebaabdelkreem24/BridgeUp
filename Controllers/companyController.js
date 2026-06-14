@@ -133,7 +133,8 @@ let graduates = await Graduate.find(query)
   }
   if (minIQScore) {
     graduates = graduates.filter(g => g.iqScore >= parseInt(minIQScore));
-  }
+  };
+  
 
   res.status(200).json({
     status: "success",

@@ -40,4 +40,11 @@ assessmentRouter.get(
   getAssessment,
 );
 
+assessmentRouter.get('/start', protect,allowOnly("graduate"),verifySEB, (req, res) => {
+    res.json({ message: 'امتحان شغال من SEB ✅' });
+});
+
+assessmentRouter.post('/submit', verifySEB, (req, res) => {
+});
+
 export default assessmentRouter;
