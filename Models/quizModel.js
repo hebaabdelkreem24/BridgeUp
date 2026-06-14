@@ -3,13 +3,12 @@ import mongoose from "mongoose";
 const quizSchema = new mongoose.Schema({
   title: {
     type: String,
-    enum: ["IQ", "English", "Technical"],
     required: true,
   },
 
   track: {
     type: String,
-    enum: ["Frontend", "Backend"],
+    default: "",
   },
 
   description: String,

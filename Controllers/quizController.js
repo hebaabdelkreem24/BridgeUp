@@ -4,6 +4,8 @@ import {
   createQuizService,
   getAllQuizService,
   getQuizByIdService,
+  updateQuizService,
+  deleteQuizService,
 } from "../Services/quizServices.js";
 
 export const createQuiz = async (req, res) => {
@@ -41,7 +43,7 @@ export const getAllQuiz = async (req, res) => {
 
 export const getQuizById = async (req, res) => {
   try {
-    const quiz = await getQuizByIdService(req.params.id);
+    const quiz = await getQuizByIdService(req.params.quizId);
 
     if (!quiz) {
       return res.status(404).json({
@@ -53,6 +55,52 @@ export const getQuizById = async (req, res) => {
     res.status(200).json({
       status: "success",
       data: quiz,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+export const updateQuiz = async (req, res) => {
+  try {
+    const quiz = await updateQuizService(req.params.quizId, req.body);
+
+    if (!quiz) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Quiz not found",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: quiz,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+export const deleteQuiz = async (req, res) => {
+  try {
+    const quiz = await deleteQuizService(req.params.quizId);
+
+    if (!quiz) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Quiz not found",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "Quiz deleted successfully",
     });
   } catch (error) {
     res.status(500).json({

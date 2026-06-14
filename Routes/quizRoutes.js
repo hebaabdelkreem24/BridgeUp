@@ -3,6 +3,8 @@ import {
   createQuiz,
   getAllQuiz,
   getQuizById,
+  updateQuiz,
+  deleteQuiz,
 } from "../Controllers/quizController.js";
 
 const quizRouter = express.Router();
@@ -14,6 +16,10 @@ quizRouter.post("/", createQuiz);
 quizRouter.get("/", getAllQuiz);
 
 // Get quiz by id
-quizRouter.get("/:id", getQuizById);
+quizRouter
+  .route("/:quizId")
+  .get(getQuizById)
+  .put(updateQuiz)
+  .delete(deleteQuiz);
 
 export default quizRouter;
