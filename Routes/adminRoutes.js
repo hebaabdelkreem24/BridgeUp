@@ -7,19 +7,22 @@ import {
   getStats,
   getAllGraduates,
   getAllGraduatesWithFilters,
-  getCompaniesDashboardController,
+  getCompaniesDashboardController,  
+} from "../Controllers/AdminController.js";
 
+import {
     getAllCompanies,
     getCompanyprofile,
-  getStarredCompanies,
-  approveCompany,
+    approveCompany,
     rejectCompany,
     toggleStarCompany,
+    getStarredCompanies,
     banCompany,
     deleteCompany,
     contactCompany,
     contactAllCompanies
-} from "../Controllers/AdminController.js";
+}from "../Controllers/adminCompanyController.js";
+
 
 const router = express.Router();// Companies
 router.use(protect, allowOnly('admin'));
