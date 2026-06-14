@@ -104,12 +104,12 @@ export const getQuestionsForStudentService = async (quizId, userId) => {
    }));
  };
 
-export const deleteQuestionService = async (questionId) => {
-   const deletedQuestion = await Question.findByIdAndDelete(questionId);
+export const deleteAllQuestionsInQuizService = async (quizId) => {
+  const result = await Question.deleteMany({ quiz: quizId });
 
-   if (!deletedQuestion) {
-     throw new Error("Question not found");
-   }
+  if (result.deletedCount === 0) {
+    throw new Error("No questions found for this quiz");
+  }
 
-   return deletedQuestion;
+  return result.deletedCount;
 };
