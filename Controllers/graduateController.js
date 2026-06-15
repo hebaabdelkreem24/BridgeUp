@@ -39,14 +39,22 @@ export const getAssessmentMe = asyncHandler(async (req, res, next) => {
 // @desc    Update graduate profile
 // @route   PUT /api/v1/graduates/me
 // @access  Private (Graduate only)
-export const updateMyProfile = asyncHandler(async (req, res) => {
-  const profile = await updateMyProfileService(req.user._id, req.body);
+export const updateMyProfile = async (req, res, next) => {
+  try {
+    const graduate = await updateMyProfileService(
+      req.user._id,
+      req.body,
+      req.file
+    );
 
-  res.status(200).json({
-    status: "success",
-    data: profile,
-  });
-});
+    res.status(200).json({
+      status: "success",
+      data: graduate,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 // @desc    Update graduate documents and links
 // @route   PUT /api/v1/graduates/me/documents
