@@ -39,7 +39,8 @@ export const selectRole = asyncHandler(async (req, res, next) => {
 // @access  Public
 export const graduateSignup = asyncHandler(async (req, res, next) => {
   const baseUrl = `${req.protocol}://${req.get("host")}`;
-const data = await graduateSignupService(req.body, req.file, baseUrl);  res.status(201).json({
+const data = await graduateSignupService(req.body, req.file, baseUrl); 
+ res.status(201).json({
     status: "success",
     message: "Account created successfully! Welcome to BridgeUp.",
     ...data,

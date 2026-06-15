@@ -82,7 +82,7 @@ export const isApprovedCompany = asyncHandler(async (req, res, next) => {
 });
 
 // Service function for signup Graduate
-export const graduateSignupService = async (body, file) => {
+export const graduateSignupService = async (body, file, baseUrl) => {
   const {
     fullName,
     email,
@@ -146,7 +146,7 @@ const downloadBase = baseUrl ? `${baseUrl}/api/v1/download` : "";
       gender: graduate.gender,
       track: graduate.track,
       university: graduate.university,
-      cv: cvPath,
+      cv:cvUrl,
     },
     assessment,
   };
