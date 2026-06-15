@@ -5,7 +5,8 @@ import {
   getCompaniesDashboardService,
   getAllGraduateswithFiltersService,
 } from "../Services/adminService.js";
-
+import Graduate from "../Models/graduateModel.js";
+import Assessment from "../Models/assessmentModel.js";
 // @desc    Get platform statistics
 // @route   GET /api/v1/admin/stats
 // @access  Private (Admin only)
@@ -57,5 +58,46 @@ export const getAllGraduatesWithFilters = asyncHandler(async (req, res) => {
   res.status(200).json({
     status: "success",
     ...data,
+  });
+});
+
+// @desc    Get single graduate by ID (Admin)
+// @route   GET /api/v1/admin/graduates/:id
+// @access  Private (Admin)
+export const getGraduateById = asyncHandler(async (req, res) => {
+  const baseUrl = `${req.protocol}://${req.get("host")}`;
+  const downloadBase = `${baseUrl}/api/v1/download`;
+
+  const graduate = await Graduate.findById(req.params.id)
+    .select("-password -passwordResetCode -passwordResetExpiredAt -passwordResetVerified");
+
+  if (!graduate) {
+    throw new ApiError("Graduate not found", 404);
+  }
+
+  const gradObj = graduate.toObject();
+
+  // URLs
+  if (gradObj.cv && !gradObj.cv.startsWith("http")) {
+    gradObj.cv = `${downloadBase}/${gradObj.cv.replace(/^\/uploads\//, '')}`;
+  }
+  if (gradObj.profilePicture && !gradObj.profilePicture.startsWith("http")) {
+    gradObj.profilePicture = `${downloadBase}/${gradObj.profilePicture.replace(/^\/uploads\//, '')}`;
+  }
+
+  // Assessment
+  const assessment = await Assessment.findOne({ graduate: req.params.id });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      ...gradObj,
+      stats: {
+        iqScore: assessment?.iqScore || 0,
+        englishScore: assessment?.englishScore || 0,
+        technicalScore: assessment?.technicalScore || 0,
+        assessmentStatus: assessment?.status || "Pending"
+      }
+    }
   });
 });

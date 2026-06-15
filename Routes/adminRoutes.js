@@ -10,6 +10,7 @@ import {
   getCompaniesDashboardController,  
 } from "../Controllers/AdminController.js";
 
+import { getGraduateById } from "../Controllers/AdminController.js";
 import {
     getAllCompanies,
     getCompanyprofile,
@@ -57,13 +58,9 @@ router.get(
   getCompaniesDashboardController,
 );
 // Get all graduates with filters + pagination (Admin only)
-router.get(
-  "/all-graduates",
-  protect,
-  allowOnly("admin"),
-  getAllGraduatesWithFilters,
-);
-
+router.get( "/all-graduates",protect,allowOnly("admin"),getAllGraduatesWithFilters,);
+// Get single graduate by ID
+router.get("/graduates/:id", protect, allowOnly("admin"), getGraduateById);
 // ─── Graduate Contact routes ──────────────────────────
 router.post("/graduates/:graduateId/contact", contactGraduate);
 router.post("/graduates/contact-all", contactAllGraduates);
