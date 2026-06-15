@@ -7,7 +7,7 @@ import {
   getMyRoadmap,
 } from "../Controllers/graduateController.js";
 import { protect, allowOnly } from "../Services/authService.js";
-import { uploadProfileImage } from "../Middelwares/uploadMiddelware.js";
+import { uploadProfileImage , uploadSingleFile } from "../Middelwares/uploadMiddelware.js";
 
 const graduateRouter = express.Router();
 
@@ -29,6 +29,7 @@ graduateRouter.put(
   "/me/documents",
   protect,
   allowOnly("graduate"),
+  uploadSingleFile,
   updateDocumentsAndLinks,
 );
 graduateRouter.get("/me/roadmap", protect, allowOnly("graduate"), getMyRoadmap);
