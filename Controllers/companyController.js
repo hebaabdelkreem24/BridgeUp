@@ -12,61 +12,31 @@ export const getCompanyProfile = asyncHandler(async (req, res) => {
   const company = req.user;
 
   const [
-    // totalGraduates,
-    // frontendCount,
-    // backendCount,
     shortlistedCount,
-    totalOffersCount,      // ← بس total
-    acceptedOffersCount  // ← جديد
+    totalOffersCount,
+    acceptedOffersCount
   ] = await Promise.all([
-    // Graduate.countDocuments(),
-    // Graduate.countDocuments({ track: "Frontend" }),
-    // Graduate.countDocuments({ track: "Backend" }),
     Shortlist.countDocuments({ company: company._id }),
     OfferJob.countDocuments({ company: company._id }),
-    OfferJob.countDocuments({ company: company._id, status: "accepted" }) 
+    OfferJob.countDocuments({ company: company._id, status: "accepted" })
   ]);
-
+ 
+  // ← العدد الكلي = كل الـ Offers + Shortlisted
   const graduatesContacted = totalOffersCount + shortlistedCount;
-;
-const baseUrl = `${req.protocol}://${req.get("host")}`;
-const downloadBase = `${baseUrl}/api/v1/download`;// كل الملفات بتبقى: `${downloadBase}${company.logo}`
+
+  const baseUrl = `${req.protocol}://${req.get("host")}`;
+  const downloadBase = `${baseUrl}/api/v1/download`;
+
   res.status(200).json({
     status: "success",
     data: {
       company: {
-        id: company._id,
-        companyName: company.companyName,
-        email: company.email,
-        phone: company.phone,
-        website: company.website,
-        location: company.location,
-        industry: company.industry,
-        companySize: company.companySize,
-        description: company.description,
-    logo: company.logo && !company.logo.startsWith("http") 
-  ? `${downloadBase}/${company.logo.replace(/^\/uploads\//, '')}` 
-  : company.logo,
-
-commercialRegister: company.commercialRegister && !company.commercialRegister.startsWith("http") 
-  ? `${downloadBase}/${company.commercialRegister.replace(/^\/uploads\//, '')}` 
-  : company.commercialRegister,
-
-taxCard: company.taxCard && !company.taxCard.startsWith("http") 
-  ? `${downloadBase}/${company.taxCard.replace(/^\/uploads\//, '')}` 
-  : company.taxCard,
-        isApproved: company.isApproved,
-        isStarred: company.isStarred,
-        createdAt: company.createdAt,
+        // ... نفس الحاجة
       },
       stats: {
-        // totalGraduates,
-        // frontendGraduates: frontendCount,
-        // backendGraduates: backendCount,
         graduatesContacted: graduatesContacted,
         shortlisted: shortlistedCount,
-        totalOffers: totalOffersCount,
-        acceptedOffers: acceptedOffersCount,
+        acceptedOffers: acceptedOffersCount
       },
     },
   });
