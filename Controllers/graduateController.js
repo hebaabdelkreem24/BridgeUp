@@ -2,6 +2,8 @@ import asyncHandler from "express-async-handler";
 import ApiError from "../utils/apiError.js";
 import Assessment from "../Models/assessmentModel.js";
 import Graduate from "../Models/graduateModel.js";
+import Company from "../Models/companyModel.js"; // 
+
 import {
   getMyProfileService,
   getAssessmentMeService,
@@ -90,3 +92,36 @@ export const getMyRoadmap = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Get company details for graduate (when receiving offer)
+// @route   GET /api/v1/graduates/company/:companyId
+// @access  Private (Graduate)
+export const getCompanyDetailsForGraduate = asyncHandler(async (req, res,next) => {
+  const baseUrl = `${req.protocol}://${req.get("host")}`;
+  const downloadBase = `${baseUrl}/api/v1/download`;
+
+  const company = await Company.findById(req.params.companyId).select("-password");
+
+  if (!company) {
+    return next(new ApiError("Company not found", 404));
+  }
+
+  const c = company.toObject();
+
+  if (c.logo && !c.logo.startsWith("http")) {
+    c.logo = `${downloadBase}/${c.logo.replace(/^\/uploads\//, '')}`;
+  }
+  if (c.commercialRegister && !c.commercialRegister.startsWith("http")) {
+    c.commercialRegister = `${downloadBase}/${c.commercialRegister.replace(/^\/uploads\//, '')}`;
+  }
+  if (c.taxCard && !c.taxCard.startsWith("http")) {
+    c.taxCard = `${downloadBase}/${c.taxCard.replace(/^\/uploads\//, '')}`;
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      company: c,
+    },
+  });
+});

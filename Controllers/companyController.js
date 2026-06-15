@@ -15,18 +15,20 @@ export const getCompanyProfile = asyncHandler(async (req, res) => {
     // totalGraduates,
     // frontendCount,
     // backendCount,
-    contactedCount,
     shortlistedCount,
-    acceptedOffersCount
+    totalOffersCount,      // ← بس total
+    acceptedOffersCount  // ← جديد
   ] = await Promise.all([
     // Graduate.countDocuments(),
     // Graduate.countDocuments({ track: "Frontend" }),
     // Graduate.countDocuments({ track: "Backend" }),
-    ContactRequest.countDocuments({ company: company._id }),
     Shortlist.countDocuments({ company: company._id }),
-    OfferJob.countDocuments({ company: company._id, status: "accepted" })
+    OfferJob.countDocuments({ company: company._id }),
+    OfferJob.countDocuments({ company: company._id, status: "accepted" }) 
   ]);
 
+  const graduatesContacted = totalOffersCount + shortlistedCount;
+;
 const baseUrl = `${req.protocol}://${req.get("host")}`;
 const downloadBase = `${baseUrl}/api/v1/download`;// كل الملفات بتبقى: `${downloadBase}${company.logo}`
   res.status(200).json({
@@ -61,9 +63,10 @@ taxCard: company.taxCard && !company.taxCard.startsWith("http")
         // totalGraduates,
         // frontendGraduates: frontendCount,
         // backendGraduates: backendCount,
-        graduatesContacted: contactedCount,
+        graduatesContacted: graduatesContacted,
         shortlisted: shortlistedCount,
-        acceptedOffers: acceptedOffersCount
+        totalOffers: totalOffersCount,
+        acceptedOffers: acceptedOffersCount,
       },
     },
   });

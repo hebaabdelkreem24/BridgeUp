@@ -64,6 +64,9 @@ export const getAllGraduatesWithFilters = asyncHandler(async (req, res) => {
 // @desc    Get single graduate by ID (Admin)
 // @route   GET /api/v1/admin/graduates/:id
 // @access  Private (Admin)
+// @desc    Get single graduate by ID (Admin)
+// @route   GET /api/v1/admin/graduates/:id
+// @access  Private (Admin)
 export const getGraduateById = asyncHandler(async (req, res) => {
   const baseUrl = `${req.protocol}://${req.get("host")}`;
   const downloadBase = `${baseUrl}/api/v1/download`;
@@ -77,7 +80,7 @@ export const getGraduateById = asyncHandler(async (req, res) => {
 
   const gradObj = graduate.toObject();
 
-  // URLs
+  // ✅ URLs للملفات
   if (gradObj.cv && !gradObj.cv.startsWith("http")) {
     gradObj.cv = `${downloadBase}/${gradObj.cv.replace(/^\/uploads\//, '')}`;
   }
@@ -85,19 +88,22 @@ export const getGraduateById = asyncHandler(async (req, res) => {
     gradObj.profilePicture = `${downloadBase}/${gradObj.profilePicture.replace(/^\/uploads\//, '')}`;
   }
 
-  // Assessment
+  // ✅ Assessment
   const assessment = await Assessment.findOne({ graduate: req.params.id });
+
+  // ✅ Stats
+  const stats = {
+    iqScore: assessment?.iqScore || 0,
+    englishScore: assessment?.englishScore || 0,
+    technicalScore: assessment?.technicalScore || 0,
+    assessmentStatus: assessment?.status || "Pending"
+  };
 
   res.status(200).json({
     status: "success",
     data: {
       ...gradObj,
-      stats: {
-        iqScore: assessment?.iqScore || 0,
-        englishScore: assessment?.englishScore || 0,
-        technicalScore: assessment?.technicalScore || 0,
-        assessmentStatus: assessment?.status || "Pending"
-      }
+      stats
     }
   });
 });

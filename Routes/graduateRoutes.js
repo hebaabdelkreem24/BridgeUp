@@ -5,6 +5,7 @@ import {
   updateMyProfile,
   updateDocumentsAndLinks,
   getMyRoadmap,
+  getCompanyDetailsForGraduate,
 } from "../Controllers/graduateController.js";
 import { protect, allowOnly } from "../Services/authService.js";
 import { uploadProfileImage , uploadSingleFile } from "../Middelwares/uploadMiddelware.js";
@@ -32,5 +33,6 @@ graduateRouter.put(
   uploadSingleFile,
   updateDocumentsAndLinks,
 );
+graduateRouter.get("/company/:companyId", protect, allowOnly("graduate"), getCompanyDetailsForGraduate);
 graduateRouter.get("/me/roadmap", protect, allowOnly("graduate"), getMyRoadmap);
 export default graduateRouter;
