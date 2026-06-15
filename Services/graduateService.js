@@ -21,11 +21,21 @@ export const getMyProfileService = async (graduateId, baseUrl) => {
   const downloadBase = baseUrl ? `${baseUrl}/api/v1/download` : "";
 
   if (gradObj.cv && !gradObj.cv.startsWith("http")) {
-    gradObj.cv = `${downloadBase}${gradObj.cv}`;
+    gradObj.cv = `${downloadBase}/${gradObj.cv.replace(/^\/uploads\//, '')}`;
   }
   if (gradObj.profilePicture && !gradObj.profilePicture.startsWith("http")) {
-    gradObj.profilePicture = `${downloadBase}${gradObj.profilePicture}`;
+    gradObj.profilePicture = `${downloadBase}/${gradObj.profilePicture.replace(/^\/uploads\//, '')}`;
   }
+
+  const assessment = await Assessment.findOne({ graduate: graduateId });
+
+  // ← جديد: Stats
+  const stats = {
+    iqScore: assessment?.iqScore || 0,
+    englishScore: assessment?.englishScore || 0,
+    technicalScore: assessment?.technicalScore || 0,
+    assessmentStatus: assessment?.status || "Pending"
+  };
 
   return gradObj;
 };
