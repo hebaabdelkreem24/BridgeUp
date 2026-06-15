@@ -108,7 +108,7 @@ export const graduateSignupService = async (body, file) => {
     throw new ApiError("Confirm password not match password", 400);
   }
   const cvPath = file ? `/uploads/${file.filename}` : null;
-
+const downloadBase = baseUrl ? `${baseUrl}/api/v1/download` : "";
   const graduate = await Graduate.create({
     fullName,
     email,
@@ -131,6 +131,9 @@ export const graduateSignupService = async (body, file) => {
   });
 
   const token = generateToken(graduate); // ✅ small g
+   const cvUrl = cvPath && !cvPath.startsWith("http") 
+    ? `${downloadBase}/${cvPath.replace(/^\/uploads\//, '')}` 
+    : cvPath;
 
   return {
     token,
@@ -143,6 +146,7 @@ export const graduateSignupService = async (body, file) => {
       gender: graduate.gender,
       track: graduate.track,
       university: graduate.university,
+      cv: cvPath,
     },
     assessment,
   };
@@ -174,8 +178,8 @@ export const companySignupService = async (body, files) => {
   if (password !== confirmPassword) {
     throw new ApiError("Confirm password not match password", 400);
   }
-  const commercialRegisterPath = `/uploads/${files.commercialRegister[0].filename}`;
-  const taxCardPath = `/uploads/${files.taxCard[0].filename}`;
+ const commercialRegisterPath = `/uploads/${files.commercialRegister[0].filename}`;
+const taxCardPath = `/uploads/${files.taxCard[0].filename}`;
 
   const company = await Company.create({
     companyName,

@@ -13,6 +13,8 @@ import quizRouter from "./quizRoutes.js";
 import resourceRouter from "./resourceRoutes.js";
 import roadMapRouter from "./roadMapRoutes.js";
 import reportRouter from "./reportRoutes.js";
+import downloadRouter from "./downloadRoutes.js";
+
 
 export const mountRoutes = (app) => {
   app.use("/api/v1/auth", authRouter);
@@ -30,4 +32,6 @@ export const mountRoutes = (app) => {
   app.use("/api/v1/resources", resourceRouter);
   app.use("/api/v1/roadmaps", roadMapRouter);
   app.use("/api/v1/admin/reports", reportRouter);
+  // Public download route - mounted separately to avoid auth middleware
+  app.use("/api/v1/download", downloadRouter);
 };

@@ -3,15 +3,32 @@ import Company from "../Models/companyModel.js";
 import Graduate from "../Models/graduateModel.js";
 import Assessment from "../Models/assessmentModel.js";
 import Shortlist from "../Models/shortlistcompModel.js";
+import ContactRequest from "../Models/contactRequestModel.js";  
+import OfferJob from "../Models/offerJobModel.js"; 
+
 import ApiError from "../utils/apiError.js";
 
 export const getCompanyProfile = asyncHandler(async (req, res) => {
   const company = req.user;
 
-  const totalGraduates = await Graduate.countDocuments();
-  const frontendCount = await Graduate.countDocuments({ track: "Frontend" });
-  const backendCount = await Graduate.countDocuments({ track: "Backend" });
+  const [
+    // totalGraduates,
+    // frontendCount,
+    // backendCount,
+    contactedCount,
+    shortlistedCount,
+    acceptedOffersCount
+  ] = await Promise.all([
+    // Graduate.countDocuments(),
+    // Graduate.countDocuments({ track: "Frontend" }),
+    // Graduate.countDocuments({ track: "Backend" }),
+    ContactRequest.countDocuments({ company: company._id }),
+    Shortlist.countDocuments({ company: company._id }),
+    OfferJob.countDocuments({ company: company._id, status: "accepted" })
+  ]);
 
+const baseUrl = `${req.protocol}://${req.get("host")}`;
+const downloadBase = `${baseUrl}/api/v1/download`;// كل الملفات بتبقى: `${downloadBase}${company.logo}`
   res.status(200).json({
     status: "success",
     data: {
@@ -25,16 +42,28 @@ export const getCompanyProfile = asyncHandler(async (req, res) => {
         industry: company.industry,
         companySize: company.companySize,
         description: company.description,
-        commercialRegister: company.commercialRegister,
-        taxCard: company.taxCard,
+    logo: company.logo && !company.logo.startsWith("http") 
+  ? `${downloadBase}/${company.logo.replace(/^\/uploads\//, '')}` 
+  : company.logo,
+
+commercialRegister: company.commercialRegister && !company.commercialRegister.startsWith("http") 
+  ? `${downloadBase}/${company.commercialRegister.replace(/^\/uploads\//, '')}` 
+  : company.commercialRegister,
+
+taxCard: company.taxCard && !company.taxCard.startsWith("http") 
+  ? `${downloadBase}/${company.taxCard.replace(/^\/uploads\//, '')}` 
+  : company.taxCard,
         isApproved: company.isApproved,
         isStarred: company.isStarred,
         createdAt: company.createdAt,
       },
       stats: {
-        totalGraduates,
-        frontendGraduates: frontendCount,
-        backendGraduates: backendCount,
+        // totalGraduates,
+        // frontendGraduates: frontendCount,
+        // backendGraduates: backendCount,
+        graduatesContacted: contactedCount,
+        shortlisted: shortlistedCount,
+        acceptedOffers: acceptedOffersCount
       },
     },
   });
@@ -134,7 +163,7 @@ let graduates = await Graduate.find(query)
   if (minIQScore) {
     graduates = graduates.filter(g => g.iqScore >= parseInt(minIQScore));
   };
-  
+
 
   res.status(200).json({
     status: "success",

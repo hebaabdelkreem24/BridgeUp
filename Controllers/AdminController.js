@@ -22,7 +22,8 @@ export const getStats = asyncHandler(async (req, res) => {
 // @route   GET /api/v1/admin/graduates
 // @access  Private (Admin only)
 export const getAllGraduates = asyncHandler(async (req, res) => {
-  const result = await getAllGraduatesService(req.query);
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+  const result = await getAllGraduatesService(req.query,baseUrl);
 
   res.status(200).json({
     status: "success",
@@ -50,6 +51,7 @@ export const getCompaniesDashboardController = async (req, res, next) => {
 // @route   GET /api/v1/admin/all-graduates
 // @access  Private (Admin only)
 export const getAllGraduatesWithFilters = asyncHandler(async (req, res) => {
+  const baseUrl = `${req.protocol}://${req.get("host")}`;
   const data = await getAllGraduateswithFiltersService(req.query);
 
   res.status(200).json({

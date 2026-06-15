@@ -5,19 +5,26 @@ import os from "os";
 import ApiError from "../utils/apiError.js";
 
 // تأكدي إن مجلد uploads موجود
-const uploadsDir = path.join(os.tmpdir(), "uploads");
+const uploadsDir = path.join(process.cwd(), "uploads");
+console.log("UPLOADS DIR:", uploadsDir);  // ← شوفي ده بيطبع إيه
+
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    console.log("SAVING TO:", uploadsDir);  // ← شوفي ده بيطبع إيه
+    console.log("FILE:", file.originalname);
     cb(null, uploadsDir); // <-- غيرتي هنا
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
-    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+  const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
+    
+    console.log("FILENAME:", filename);
+    cb(null, filename)
   },
 });
 

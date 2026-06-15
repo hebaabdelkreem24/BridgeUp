@@ -14,7 +14,8 @@ import {
 // @route   GET /api/v1/graduates/me
 // @access  Private (Graduate only)
 export const getMyProfile = asyncHandler(async (req, res) => {
-  const profile = await getMyProfileService(req.user._id);
+  const baseUrl = `${req.protocol}://${req.get("host")}`;
+  const profile = await getMyProfileService(req.user._id, baseUrl);
 
   res.status(200).json({
     status: "success",
@@ -52,10 +53,12 @@ export const updateMyProfile = asyncHandler(async (req, res) => {
 // @route   PUT /api/v1/graduates/me/documents
 // @access  Private (Graduate only)
 export const updateDocumentsAndLinks = asyncHandler(async (req, res) => {
+  const baseUrl = `${req.protocol}://${req.get("host")}`;
   const graduate = await updateDocumentsAndLinksService(
     req.user._id,
     req.body,
     req.file,
+    baseUrl,
   );
 
   res.status(200).json({

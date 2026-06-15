@@ -1,4 +1,6 @@
 import asyncHandler from "express-async-handler";
+import Graduate from "../Models/graduateModel.js";
+import { createNotification } from "../Services/notificationService.js";
 import {
   getMyNotifications,
   markAsRead,
@@ -70,5 +72,76 @@ export const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
   res.status(200).json({
     status: "success",
     message: "All notifications marked as read",
+  });
+});
+
+
+// ─── Contact Single Graduate ──────────────────────────
+export const contactGraduate = asyncHandler(async (req, res, next) => {
+  const { message, title } = req.body;
+  const { graduateId } = req.params;
+
+  if (!message || message.trim() === "") {
+    return next(new ApiError("Message is required", 400));
+  }
+
+  const graduate = await Graduate.findById(graduateId);
+  if (!graduate) return next(new ApiError("Graduate not found", 404));
+
+  await createNotification({
+    recipient: graduate._id,
+    recipientRole: "graduate",
+    sender: req.user._id,
+    senderRole: "admin",
+    type: "general",
+    title: title || "📩 Message from Admin",
+    message: message,
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "Notification sent successfully to graduate",
+    data: {
+      graduate: graduate.fullName,
+      sentMessage: message,
+    },
+  });
+});
+
+// ─── Contact All Graduates ───────────────────────────
+export const contactAllGraduates = asyncHandler(async (req, res, next) => {
+  const { message, title } = req.body;
+
+  if (!message || message.trim() === "") {
+    return next(new ApiError("Message is required", 400));
+  }
+
+  const graduates = await Graduate.find().select("_id fullName");
+
+  if (graduates.length === 0) {
+    return next(new ApiError("No graduates found", 404));
+  }
+
+  const notifications = [];
+  for (const graduate of graduates) {
+    const notification = await createNotification({
+      recipient: graduate._id,
+      recipientRole: "graduate",
+      sender: req.user._id,
+      senderRole: "admin",
+      type: "general",
+      title: title || "📩 Message from Admin",
+      message: message,
+    });
+    notifications.push(notification);
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: `Notification sent to ${graduates.length} graduates`,
+    data: {
+      totalGraduates: graduates.length,
+      sentMessage: message,
+    },
   });
 });

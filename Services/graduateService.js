@@ -6,7 +6,7 @@ import Phase from "../Models/PhaseModel.js";
 import Resource from "../Models/resourceModel.js";
 
 // Get graduate profile
-export const getMyProfileService = async (graduateId) => {
+export const getMyProfileService = async (graduateId, baseUrl) => {
   const graduate = await Graduate.findById(graduateId).select(
     "-password -passwordResetCode -passwordResetExpiredAt -passwordResetVerified"
   );
@@ -15,7 +15,18 @@ export const getMyProfileService = async (graduateId) => {
     throw new ApiError("Graduate not found", 404);
   }
 
-  return graduate;
+  // Convert to object and add download links for files
+  const gradObj = graduate.toObject();
+  const downloadBase = baseUrl ? `${baseUrl}/api/v1/download` : "";
+
+  if (gradObj.cv && !gradObj.cv.startsWith("http")) {
+    gradObj.cv = `${downloadBase}${gradObj.cv}`;
+  }
+  if (gradObj.profilePicture && !gradObj.profilePicture.startsWith("http")) {
+    gradObj.profilePicture = `${downloadBase}${gradObj.profilePicture}`;
+  }
+
+  return gradObj;
 };
 
 // Get assessment results for a graduate
@@ -53,7 +64,8 @@ export const updateMyProfileService = async (graduateId, data) => {
 export const updateDocumentsAndLinksService = async (
   graduateId,
   data,
-  file
+  file,
+  baseUrl
 ) => {
   const graduate = await Graduate.findById(graduateId);
 
@@ -79,7 +91,18 @@ export const updateDocumentsAndLinksService = async (
 
   await graduate.save();
 
-  return graduate;
+  // Convert to object and add download links
+  const gradObj = graduate.toObject();
+  const downloadBase = baseUrl ? `${baseUrl}/api/v1/download` : "";
+
+  if (gradObj.cv && !gradObj.cv.startsWith("http")) {
+    gradObj.cv = `${downloadBase}${gradObj.cv}`;
+  }
+  if (gradObj.profilePicture && !gradObj.profilePicture.startsWith("http")) {
+    gradObj.profilePicture = `${downloadBase}${gradObj.profilePicture}`;
+  }
+
+  return gradObj;
 };
 
 // Get graduate roadmap

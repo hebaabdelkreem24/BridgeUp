@@ -22,8 +22,9 @@ export const getStatsService = async () => {
 };
 
 // Service function to get all graduates with scores + pagination
-export const getAllGraduatesService = async (query) => {
+export const getAllGraduatesService = async (query, baseUrl) => {
   const { page = 1, limit = 20 } = query;
+  const downloadBase = baseUrl ? `${baseUrl}/api/v1/download` : "";
 
   const skip = (Number(page) - 1) * Number(limit);
 
@@ -80,6 +81,13 @@ export const getAllGraduatesService = async (query) => {
           technical: { $ifNull: ["$assessment.technicalScore", 0] },
           status: { $ifNull: ["$assessment.status", "Pending"] },
         },
+        profilePicture: {
+          $cond: {
+            if: { $and: [{ $ne: ["$profilePicture", null] }, { $not: { $regexMatch: { input: "$profilePicture", regex: "^http" } } }] },
+            then: { $concat: [downloadBase, "$profilePicture"] },
+            else: "$profilePicture"
+          }
+        },
       },
     },
   ]);
@@ -115,7 +123,7 @@ export const getCompaniesDashboardService = async () => {
 };
 
 // Service function to get all Graduates for admin dashboard
-export const getAllGraduateswithFiltersService = async (query) => {
+export const getAllGraduateswithFiltersService = async (query, baseUrl) => {
   const {
     page = 1,
     limit = 20,
@@ -126,6 +134,7 @@ export const getAllGraduateswithFiltersService = async (query) => {
     minEnglish,
     minTechnical,
   } = query;
+  const downloadBase = baseUrl ? `${baseUrl}/api/v1/download` : "";
 
   const skip = (Number(page) - 1) * Number(limit);
 
@@ -186,6 +195,13 @@ export const getAllGraduateswithFiltersService = async (query) => {
           english: { $ifNull: ["$assessment.englishScore", 0] },
           technical: { $ifNull: ["$assessment.technicalScore", 0] },
           status: { $ifNull: ["$assessment.status", "Pending"] },
+        },
+        profilePicture: {
+          $cond: {
+            if: { $and: [{ $ne: ["$profilePicture", null] }, { $not: { $regexMatch: { input: "$profilePicture", regex: "^http" } } }] },
+            then: { $concat: [downloadBase, "$profilePicture"] },
+            else: "$profilePicture"
+          }
         },
       },
     },
