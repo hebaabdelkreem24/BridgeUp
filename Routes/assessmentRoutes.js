@@ -5,17 +5,19 @@ import {
   getAssessment,
   startExam,
   submitExam,
+  getMyAttempts,
 } from "../Controllers/assessmentController.js";
 
 import { verifySEB } from "../Middelwares/sebVerifyMiddelware.js";
 
 const assessmentRouter = express.Router();
+
 assessmentRouter.get(
   "/start",
   protect,
   allowOnly("graduate"),
   verifySEB,
-  startExam,
+  startExam
 );
 
 assessmentRouter.post(
@@ -23,28 +25,28 @@ assessmentRouter.post(
   protect,
   allowOnly("graduate"),
   verifySEB,
-  submitExam,
+  submitExam
+);
+
+assessmentRouter.get(
+  "/my-attempts",
+  protect,
+  allowOnly("graduate"),
+  getMyAttempts
 );
 
 assessmentRouter.put(
   "/:graduateId",
   protect,
   allowOnly("admin"),
-  updateAssessment,
+  updateAssessment
 );
 
 assessmentRouter.get(
   "/:graduateId",
   protect,
   allowOnly("admin"),
-  getAssessment,
+  getAssessment
 );
-
-assessmentRouter.get('/start', protect,allowOnly("graduate"),verifySEB, (req, res) => {
-    res.json({ message: 'امتحان شغال من SEB ✅' });
-});
-
-assessmentRouter.post('/submit', verifySEB, (req, res) => {
-});
 
 export default assessmentRouter;

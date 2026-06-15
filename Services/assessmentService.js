@@ -2,21 +2,23 @@ import ApiError from "../utils/apiError.js";
 import Assessment from "../Models/assessmentModel.js";
 import Graduate from "../Models/graduateModel.js";
 import Question from "../Models/questionsModel.js";
-import Quiz from "../Models/quizModel.js"
-import ExamAttempt from "../Models/examModel.js"
+import Quiz from "../Models/quizModel.js";
+import ExamAttempt from "../Models/examModel.js";
 
-// Service function to update assessment results for a graduate
+// Update assessment results for a graduate
 export const updateAssessmentService = async (graduateId, data) => {
   const graduate = await Graduate.findById(graduateId);
 
   if (!graduate) {
     throw new ApiError("Graduate not found", 404);
   }
+
   data.status = "Completed";
+
   const assessment = await Assessment.findOneAndUpdate(
     { graduate: graduateId },
     data,
-    { new: true },
+    { new: true }
   );
 
   if (!assessment) {
@@ -26,7 +28,7 @@ export const updateAssessmentService = async (graduateId, data) => {
   return assessment;
 };
 
-// Service function to get assessment results for a graduate
+// Get assessment results for a graduate
 export const getAssessmentService = async (graduateId) => {
   const assessment = await Assessment.findOne({ graduate: graduateId });
 
@@ -37,22 +39,51 @@ export const getAssessmentService = async (graduateId) => {
   return assessment;
 };
 
+// Submit exam + calculate correct/wrong + prevent repeated attempts
 export const submitExamService = async (quizId, answers, studentId) => {
+  const oldAttempt = await ExamAttempt.findOne({
+    student: studentId,
+    quiz: quizId,
+  });
+
+  if (oldAttempt) {
+    throw new ApiError("You already submitted this exam before", 400);
+  }
+
   const questions = await Question.find({ quiz: quizId });
 
+  if (!questions || questions.length === 0) {
+    throw new ApiError("No questions found for this exam", 404);
+  }
+
   let totalScore = 0;
+
   const gradedAnswers = answers.map((ans) => {
-    const question = questions.find((q) => q._id.toString() === ans.questionId);
-    if (!question) return { ...ans, isCorrect: false, grade: 0 };
+    const question = questions.find(
+      (q) => q._id.toString() === ans.questionId
+    );
+
+    if (!question) {
+      return {
+        ...ans,
+        isCorrect: false,
+        grade: 0,
+      };
+    }
 
     const correctAnswer = question.answers.find((a) => a.isCorrect);
-    const isCorrect = correctAnswer?._id.toString() === ans.answerId;
+
+    const isCorrect =
+      correctAnswer?._id.toString() === ans.answerId.toString();
+
     const grade = isCorrect ? question.grade : 0;
+
     totalScore += grade;
 
     return {
       questionId: ans.questionId,
       answerId: ans.answerId,
+      correctAnswerId: correctAnswer?._id,
       isCorrect,
       grade,
       allAnswers: question.answers.map((a) => ({
@@ -63,6 +94,12 @@ export const submitExamService = async (quizId, answers, studentId) => {
     };
   });
 
+  const quiz = await Quiz.findById(quizId);
+
+  if (!quiz) {
+    throw new ApiError("Quiz not found", 404);
+  }
+
   await ExamAttempt.create({
     student: studentId,
     quiz: quizId,
@@ -71,30 +108,42 @@ export const submitExamService = async (quizId, answers, studentId) => {
     status: "submitted",
   });
 
-  const quiz = await Quiz.findById(quizId);
+  const title = quiz.title?.toLowerCase();
+
   const scoreField =
-    quiz.title === "IQ"
+    title?.includes("iq")
       ? "iqScore"
-      : quiz.title === "English"
-        ? "englishScore"
-        : "technicalScore";
+      : title?.includes("english")
+      ? "englishScore"
+      : "technicalScore";
 
-  const updatedAssessment = await Assessment.findOneAndUpdate(
-    { graduate: studentId },
-    { [scoreField]: totalScore },
-    { new: true },
-  );
+  let assessment = await Assessment.findOne({ graduate: studentId });
 
-  if (
-    updatedAssessment.iqScore > 0 &&
-    updatedAssessment.englishScore > 0 &&
-    updatedAssessment.technicalScore > 0
-  ) {
-    await Assessment.findOneAndUpdate(
-      { graduate: studentId },
-      { status: "Completed" },
-    );
+  if (!assessment) {
+    assessment = await Assessment.create({
+      graduate: studentId,
+      iqScore: 0,
+      englishScore: 0,
+      technicalScore: 0,
+      status: "Pending",
+    });
   }
 
-  return { totalScore, gradedAnswers };
+  assessment[scoreField] = totalScore;
+
+  if (
+    assessment.iqScore > 0 &&
+    assessment.englishScore > 0 &&
+    assessment.technicalScore > 0
+  ) {
+    assessment.status = "Completed";
+  }
+
+  await assessment.save();
+
+  return {
+    totalScore,
+    gradedAnswers,
+    scoreField,
+  };
 };
