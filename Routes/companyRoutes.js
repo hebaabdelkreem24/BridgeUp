@@ -8,6 +8,7 @@ import {
   addToShortlist,
   removeFromShortlist,
   getShortlisted,
+  getGraduateProfileForCompany
 } from "../Controllers/companyController.js";
 import {
   getCompanyNotifications,
@@ -35,5 +36,8 @@ router.get("/shortlisted", getShortlisted);
 router.get("/notifications", getCompanyNotifications);
 router.patch("/notifications/read-all", markAllNotificationsAsRead);
 router.patch("/notifications/:id/read", markNotificationAsRead);
+
+// Get single graduate profile for company
+router.get("/graduates/:graduateId", protect, allowOnly("company"), isApprovedCompany, getGraduateProfileForCompany);
 
 export default router;

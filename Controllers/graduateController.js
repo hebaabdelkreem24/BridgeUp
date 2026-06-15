@@ -108,15 +108,9 @@ export const getCompanyDetailsForGraduate = asyncHandler(async (req, res,next) =
 
   const c = company.toObject();
 
-  if (c.logo && !c.logo.startsWith("http")) {
-    c.logo = `${downloadBase}/${c.logo.replace(/^\/uploads\//, '')}`;
-  }
-  if (c.commercialRegister && !c.commercialRegister.startsWith("http")) {
-    c.commercialRegister = `${downloadBase}/${c.commercialRegister.replace(/^\/uploads\//, '')}`;
-  }
-  if (c.taxCard && !c.taxCard.startsWith("http")) {
-    c.taxCard = `${downloadBase}/${c.taxCard.replace(/^\/uploads\//, '')}`;
-  }
+delete c.logo;
+  delete c.commercialRegister;
+  delete c.taxCard;
 
   res.status(200).json({
     status: "success",

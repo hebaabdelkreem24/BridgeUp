@@ -20,8 +20,7 @@ export const getCompanyProfile = asyncHandler(async (req, res) => {
     OfferJob.countDocuments({ company: company._id }),
     OfferJob.countDocuments({ company: company._id, status: "accepted" })
   ]);
- 
-  // ← العدد الكلي = كل الـ Offers + Shortlisted
+
   const graduatesContacted = totalOffersCount + shortlistedCount;
 
   const baseUrl = `${req.protocol}://${req.get("host")}`;
@@ -31,17 +30,36 @@ export const getCompanyProfile = asyncHandler(async (req, res) => {
     status: "success",
     data: {
       company: {
-        // ... نفس الحاجة
+        id: company._id,
+        companyName: company.companyName,
+        email: company.email,
+        phone: company.phone,
+        website: company.website,
+        location: company.location,
+        industry: company.industry,
+        companySize: company.companySize,
+        description: company.description,
+        logo: company.logo && !company.logo.startsWith("http") 
+          ? `${downloadBase}/${company.logo.replace(/^\/uploads\//, '')}` 
+          : company.logo,
+        commercialRegister: company.commercialRegister && !company.commercialRegister.startsWith("http") 
+          ? `${downloadBase}/${company.commercialRegister.replace(/^\/uploads\//, '')}` 
+          : company.commercialRegister,
+        taxCard: company.taxCard && !company.taxCard.startsWith("http") 
+          ? `${downloadBase}/${company.taxCard.replace(/^\/uploads\//, '')}` 
+          : company.taxCard,
+        isApproved: company.isApproved,
+        isStarred: company.isStarred,
+        createdAt: company.createdAt,
       },
       stats: {
         graduatesContacted: graduatesContacted,
         shortlisted: shortlistedCount,
         acceptedOffers: acceptedOffersCount
-      },
+      }
     },
   });
 });
-
 export const updateCompanyProfile = asyncHandler(async (req, res, next) => {
   const company = req.user;
   const allowedUpdates = [
@@ -190,5 +208,48 @@ export const getShortlisted = asyncHandler(async (req, res) => {
     status: "success",
     results: shortlists.length,
     data: { shortlists },
+  });
+});
+// @desc    Get single graduate profile for company
+// @route   GET /api/v1/company/graduates/:graduateId
+// @access  Private (Company)
+export const getGraduateProfileForCompany = asyncHandler(async (req, res, next) => {
+  const baseUrl = `${req.protocol}://${req.get("host")}`;
+  const downloadBase = `${baseUrl}/api/v1/download`;
+
+  const graduate = await Graduate.findById(req.params.graduateId)
+    .select("-password -passwordResetCode -passwordResetExpiredAt -passwordResetVerified");
+
+  if (!graduate) {
+    return next(new ApiError("Graduate not found", 404));
+  }
+
+  const gradObj = graduate.toObject();
+
+  // URLs للملفات
+  if (gradObj.cv && !gradObj.cv.startsWith("http")) {
+    gradObj.cv = `${downloadBase}/${gradObj.cv.replace(/^\/uploads\//, '')}`;
+  }
+  if (gradObj.profilePicture && !gradObj.profilePicture.startsWith("http")) {
+    gradObj.profilePicture = `${downloadBase}/${gradObj.profilePicture.replace(/^\/uploads\//, '')}`;
+  }
+
+  // Assessment
+  const assessment = await Assessment.findOne({ graduate: req.params.graduateId });
+
+  // Stats
+  const stats = {
+    iqScore: assessment?.iqScore || 0,
+    englishScore: assessment?.englishScore || 0,
+    technicalScore: assessment?.technicalScore || 0,
+    assessmentStatus: assessment?.status || "Pending"
+  };
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      ...gradObj,
+      stats
+    }
   });
 });
