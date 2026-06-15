@@ -3,7 +3,9 @@ import Graduate from "../Models/graduateModel.js";
 import { createNotification } from "../Services/notificationService.js";
 import {
   getMyNotifications,
-  markAsRead,
+  getMyNotificationsFromAdmin,
+  getMyPersonalAdminMessages,
+  // markAsRead,
   markAllAsRead,
 } from "../Services/notificationService.js";
 
@@ -93,7 +95,7 @@ export const contactGraduate = asyncHandler(async (req, res, next) => {
     recipientRole: "graduate",
     sender: req.user._id,
     senderRole: "admin",
-    type: "general",
+    type: "admin_message",
     title: title || "📩 Message from Admin",
     message: message,
   });
@@ -143,5 +145,36 @@ export const contactAllGraduates = asyncHandler(async (req, res, next) => {
       totalGraduates: graduates.length,
       sentMessage: message,
     },
+  });
+});
+
+// @desc    Get notifications from admin only (for graduate)
+// @route   GET /api/v1/notifications/admin
+// @access  Private (Graduate)
+export const getAdminNotifications = asyncHandler(async (req, res) => {
+  const { notifications, unreadCount } = await getMyNotificationsFromAdmin(
+    req.user._id
+  );
+
+  res.status(200).json({
+    status: "success",
+    unreadCount,
+    results: notifications.length,
+    data: { notifications },
+  });
+});
+// @desc    Get personal admin messages only (for graduate)
+// @route   GET /api/v1/notifications/admin/personal
+// @access  Private (Graduate)
+export const getPersonalAdminMessages = asyncHandler(async (req, res) => {
+  const { notifications, unreadCount } = await getMyPersonalAdminMessages(
+    req.user._id
+  );
+
+  res.status(200).json({
+    status: "success",
+    unreadCount,
+    results: notifications.length,
+    data: { notifications },
   });
 });

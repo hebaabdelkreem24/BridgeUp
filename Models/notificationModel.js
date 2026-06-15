@@ -35,7 +35,8 @@ const notificationSchema = new mongoose.Schema(
         "new_offer",             // company → graduate
         "offer_accepted",        // graduate → company
         "offer_rejected",  
-        "general"      // graduate → company
+        "general"   ,
+        "admin_message"   // graduate → company
       ],
       required: true,
     },

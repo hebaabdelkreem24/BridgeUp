@@ -56,3 +56,40 @@ export const markAllAsRead = async (userId, role) => {
   );
   return true;
 };
+
+// جلب notifications من الـ Admin بس
+export const getMyNotificationsFromAdmin = async (userId) => {
+  const notifications = await Notification.find({
+    recipient: userId,
+    recipientRole: "graduate",
+    senderRole: "admin",  // ← بس من الـ Admin
+  }).sort("-createdAt");
+
+  const unreadCount = await Notification.countDocuments({
+    recipient: userId,
+    recipientRole: "graduate",
+    senderRole: "admin",
+    isRead: false,
+  });
+
+  return { notifications, unreadCount };
+};
+// جلب بس الـ Messages المخصصة (لخريج واحد)
+export const getMyPersonalAdminMessages = async (userId) => {
+  const notifications = await Notification.find({
+    recipient: userId,
+    recipientRole: "graduate",
+    senderRole: "admin",
+    type: "admin_message",  // ← بس المخصصة
+  }).sort("-createdAt");
+
+  const unreadCount = await Notification.countDocuments({
+    recipient: userId,
+    recipientRole: "graduate",
+    senderRole: "admin",
+    type: "admin_message",
+    isRead: false,
+  });
+
+  return { notifications, unreadCount };
+};
