@@ -5,11 +5,10 @@ import Roadmap from "../Models/roadmapModel.js";
 import Phase from "../Models/PhaseModel.js";
 import Resource from "../Models/resourceModel.js";
 
-
 // Get graduate profile
 export const getMyProfileService = async (graduateId, baseUrl) => {
   const graduate = await Graduate.findById(graduateId).select(
-    "-password -passwordResetCode -passwordResetExpiredAt -passwordResetVerified"
+    "-password -passwordResetCode -passwordResetExpiredAt -passwordResetVerified",
   );
 
   if (!graduate) {
@@ -21,10 +20,10 @@ export const getMyProfileService = async (graduateId, baseUrl) => {
   const downloadBase = baseUrl ? `${baseUrl}/api/v1/download` : "";
 
   if (gradObj.cv && !gradObj.cv.startsWith("http")) {
-    gradObj.cv = `${downloadBase}/${gradObj.cv.replace(/^\/uploads\//, '')}`;
+    gradObj.cv = `${downloadBase}/${gradObj.cv.replace(/^\/uploads\//, "")}`;
   }
   if (gradObj.profilePicture && !gradObj.profilePicture.startsWith("http")) {
-    gradObj.profilePicture = `${downloadBase}/${gradObj.profilePicture.replace(/^\/uploads\//, '')}`;
+    gradObj.profilePicture = `${downloadBase}/${gradObj.profilePicture.replace(/^\/uploads\//, "")}`;
   }
 
   const assessment = await Assessment.findOne({ graduate: graduateId });
@@ -34,19 +33,19 @@ export const getMyProfileService = async (graduateId, baseUrl) => {
     iqScore: assessment?.iqScore || 0,
     englishScore: assessment?.englishScore || 0,
     technicalScore: assessment?.technicalScore || 0,
-    assessmentStatus: assessment?.status || "Pending"
+    assessmentStatus: assessment?.status || "Pending",
   };
 
   return gradObj;
 };
 
 // Get assessment results for a graduate
-export const getAssessmentMeService = async (graduateId) => { 
-    const assessment = await Assessment.findOne({ graduate: graduateId });
-    if (!assessment) {
-        throw new ApiError("Assessment not found", 404);
-    }
-    return assessment;
+export const getAssessmentMeService = async (graduateId) => {
+  const assessment = await Assessment.findOne({ graduate: graduateId });
+  if (!assessment) {
+    throw new ApiError("Assessment not found", 404);
+  }
+  return assessment;
 };
 
 // Update graduate profile
@@ -60,7 +59,7 @@ export const updateMyProfileService = async (graduateId, data, file) => {
   };
 
   if (file) {
-    updateData.profilePicture = file.path;
+    updateData.profilePicture = `/uploads/${file.filename}`;
   }
 
   const graduate = await Graduate.findByIdAndUpdate(
@@ -77,14 +76,14 @@ export const updateMyProfileService = async (graduateId, data, file) => {
   }
 
   return graduate;
-};
+};;
 
 // Update graduate documents and links
 export const updateDocumentsAndLinksService = async (
   graduateId,
   data,
   file,
-  baseUrl
+  baseUrl,
 ) => {
   const graduate = await Graduate.findById(graduateId);
 
@@ -137,9 +136,7 @@ export const getMyRoadmapService = async (graduateId) => {
   });
 
   if (!roadmap) {
-    throw new Error(
-      `No roadmap found for track: ${graduate.track}`,
-    );
+    throw new Error(`No roadmap found for track: ${graduate.track}`);
   }
 
   const phases = await Phase.find({
