@@ -70,6 +70,22 @@ export const uploadSingleFile = (req, res, next) => {
   });
 };
 
+export const uploadProfileImage = (req, res, next) => {
+  const upload = multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 },
+  }).single("profilePicture");
+
+  upload(req, res, (err) => {
+    if (err) {
+      return next(new ApiError(err.message, 400));
+    }
+
+    next();
+  });
+};
+
 // Company: ملفين (commercialRegister + taxCard) - max 10MB each
 export const uploadCompanyFiles = (req, res, next) => {
   const upload = multer({

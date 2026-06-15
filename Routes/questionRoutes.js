@@ -44,7 +44,7 @@ questionRouter.get(
  );
 
 questionRouter.delete(
-   "/:questionId",
+   "/:quizId",
    protect,
    allowOnly("admin"),
    deleteAllQuestionsInQuiz,

@@ -5,6 +5,7 @@ import Roadmap from "../Models/roadmapModel.js";
 import Phase from "../Models/PhaseModel.js";
 import Resource from "../Models/resourceModel.js";
 
+
 // Get graduate profile
 export const getMyProfileService = async (graduateId, baseUrl) => {
   const graduate = await Graduate.findById(graduateId).select(
@@ -39,18 +40,26 @@ export const getAssessmentMeService = async (graduateId) => {
 };
 
 // Update graduate profile
-export const updateMyProfileService = async (graduateId, data) => {
+export const updateMyProfileService = async (graduateId, data, file) => {
+  const updateData = {
+    fullName: data.fullName,
+    phone: data.phone,
+    age: data.age,
+    university: data.university,
+    graduationYear: data.graduationYear,
+  };
+
+  if (file) {
+    updateData.profilePicture = file.path;
+  }
+
   const graduate = await Graduate.findByIdAndUpdate(
     graduateId,
+    updateData,
     {
-      fullName: data.fullName,
-      phone: data.phone,
-      age: data.age,
-      university: data.university,
-      graduationYear: data.graduationYear,
-      profilePicture,
-    },
-    { new: true, runValidators: true }
+      new: true,
+      runValidators: true,
+    }
   );
 
   if (!graduate) {

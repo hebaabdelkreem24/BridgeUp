@@ -28,8 +28,8 @@ import {
   contactAllGraduates,
 } from "../Controllers/notificationController.js";
 
-const router = express.Router();// Companies
-router.use(protect, allowOnly('admin'));
+const router = express.Router(); // Companies
+router.use(protect, allowOnly("admin"));
 
 router.get("/companies", adminCompanyController.getAllCompanies);
 router.get("/companies/starred", adminCompanyController.getStarredCompanies);
@@ -40,24 +40,29 @@ router.patch("/companies/:id/star", adminCompanyController.toggleStarCompany);
 router.patch("/companies/:id/ban", banCompany);
 router.delete("/companies/:id", deleteCompany);
 
-// Contact single graduate
-router.post("/graduates/:graduateId/contact", contactGraduate);
 
-// Contact all graduates
-router.post("/graduates/contact-all", contactAllGraduates);
 // ─── NEW: Contact routes ──────────────────────────────
 router.post("/companies/:id/contact", contactCompany);
 router.post("/companies/contact-all", contactAllCompanies);
-
 
 // Get platform statistics (Admin only)
 router.get("/stats", protect, allowOnly("admin"), getStats);
 // Get all graduates with scores + pagination (Admin only)
 router.get("/graduates", protect, allowOnly("admin"), getAllGraduates);
 // Get companies dashboard data (Admin only)
-router.get("/companies-dashboard", protect,allowOnly("admin"),getCompaniesDashboardController);
+router.get(
+  "/companies-dashboard",
+  protect,
+  allowOnly("admin"),
+  getCompaniesDashboardController,
+);
 // Get all graduates with filters + pagination (Admin only)
-router.get("/all-graduates",protect,allowOnly("admin"),getAllGraduatesWithFilters);
+router.get(
+  "/all-graduates",
+  protect,
+  allowOnly("admin"),
+  getAllGraduatesWithFilters,
+);
 
 // ─── Graduate Contact routes ──────────────────────────
 router.post("/graduates/:graduateId/contact", contactGraduate);
