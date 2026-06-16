@@ -39,7 +39,7 @@ export const getAssessmentService = async (graduateId) => {
   return assessment;
 };
 
-// Submit exam + calculate correct/wrong + prevent repeated attempts
+// Submit exam + calculate percentage + prevent repeated attempts
 export const submitExamService = async (quizId, answers, studentId) => {
   const oldAttempt = await ExamAttempt.findOne({
     student: studentId,
@@ -56,7 +56,7 @@ export const submitExamService = async (quizId, answers, studentId) => {
     throw new ApiError("No questions found for this exam", 404);
   }
 
-  let totalScore = 0;
+  let rawScore = 0;
 
   const gradedAnswers = answers.map((ans) => {
     const question = questions.find(
@@ -76,9 +76,9 @@ export const submitExamService = async (quizId, answers, studentId) => {
     const isCorrect =
       correctAnswer?._id.toString() === ans.answerId.toString();
 
-    const grade = isCorrect ? question.grade : 0;
+    const grade = isCorrect ? question.grade || 1 : 0;
 
-    totalScore += grade;
+    rawScore += grade;
 
     return {
       questionId: ans.questionId,
@@ -94,6 +94,13 @@ export const submitExamService = async (quizId, answers, studentId) => {
     };
   });
 
+  const maxScore = questions.reduce((sum, question) => {
+    return sum + (question.grade || 1);
+  }, 0);
+
+  const percentage =
+    maxScore > 0 ? Math.round((rawScore / maxScore) * 100) : 0;
+
   const quiz = await Quiz.findById(quizId);
 
   if (!quiz) {
@@ -104,7 +111,7 @@ export const submitExamService = async (quizId, answers, studentId) => {
     student: studentId,
     quiz: quizId,
     answers: gradedAnswers,
-    totalScore,
+    totalScore: percentage,
     status: "submitted",
   });
 
@@ -129,7 +136,7 @@ export const submitExamService = async (quizId, answers, studentId) => {
     });
   }
 
-  assessment[scoreField] = totalScore;
+  assessment[scoreField] = percentage;
 
   if (
     assessment.iqScore > 0 &&
@@ -142,7 +149,9 @@ export const submitExamService = async (quizId, answers, studentId) => {
   await assessment.save();
 
   return {
-    totalScore,
+    totalScore: percentage,
+    rawScore,
+    maxScore,
     gradedAnswers,
     scoreField,
   };
